@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}models{% endblock %}
+
+{% block content %}
+{% for produced_model in produced_models %}
+    {{ produced_model.worker }}
+
+{% endfor %}
+
+{% endblock %}
