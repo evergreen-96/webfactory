@@ -1,3 +1,8 @@
 from django.contrib import admin
 
-# Register your models here.
+from core.models import *
+
+admin.site.register(BuildingModel)
+admin.site.register(ToolModel)
+admin.site.register(WorkZoneModel)
+admin.site.register(ProducedModel)
