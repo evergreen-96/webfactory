@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Передать показания
+{% endblock %}
+
+{% block content %}
+    <form action="" method="post">
+
+        {{ form.as_p }}
+        <input type="submit" name="upvote" value="Upvote"/>{% csrf_token %}
+    </form>
+
+{% endblock %}
