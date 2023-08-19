@@ -21,7 +21,10 @@ class WorkZoneModel(models.Model):
     building = models.ForeignKey(BuildingModel, on_delete=models.CASCADE)
     tool = models.ForeignKey(ToolModel, on_delete=models.CASCADE)
 
+
 User = get_user_model()
+
+
 class ProducedModel(models.Model):
     worker = models.ForeignKey(User, on_delete=models.DO_NOTHING, null=True)
     working_zome = models.ForeignKey(WorkZoneModel, on_delete=models.CASCADE)
@@ -36,5 +39,3 @@ class ProducedModel(models.Model):
         if self.for_last_hour:
             self.start_time = self.end_time - timedelta(hours=1)
         super(ProducedModel, self).save(*args, **kwargs)
-
-

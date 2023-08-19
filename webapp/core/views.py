@@ -1,7 +1,5 @@
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
-from django.contrib.auth.views import PasswordChangeView
-from django.http import QueryDict, HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from core.forms import ProducedForm, RegistrationForm, CustomLoginForm
@@ -14,16 +12,19 @@ def produced_model_list(request):
                                                     'profile': request.user})
 
 
+@login_required
 def produced_new(request):
     if request.method == 'POST':
         form = ProducedForm(request.POST)
         if form.is_valid():
             form.instance.worker = request.user
             form.save()
+            return redirect('produced_model_list')
+
     else:
         form = ProducedForm()
     return render(request, 'include/testify_form.html', {'form': form, 'inst': 1,
-                                                    'profile': request.user})
+                                                         'profile': request.user})
 
 
 def register(request):
@@ -38,7 +39,7 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, 'include/register.html', {'form': form,
-                                                    'profile': request.user})
+                                                     'profile': request.user})
 
 
 def custom_login(request):
@@ -54,7 +55,7 @@ def custom_login(request):
     else:
         form = CustomLoginForm()
     return render(request, 'include/login.html', {'form': form,
-                                                    'profile': request.user})
+                                                  'profile': request.user})
 
 
 def logout_redirect(request):

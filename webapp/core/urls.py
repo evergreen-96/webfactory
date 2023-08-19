@@ -1,5 +1,4 @@
-from django.contrib.auth import login
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LogoutView
 from django.urls import path
 
 from core.views import produced_model_list, produced_new, register, custom_login, logout_redirect

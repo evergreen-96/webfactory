@@ -4,8 +4,9 @@ from django.contrib.auth import get_user_model
 from .models import ProducedModel
 
 User = get_user_model()
-class ProducedForm(forms.ModelForm):
 
+
+class ProducedForm(forms.ModelForm):
     class Meta:
         model = ProducedModel
         exclude = ('worker',)
