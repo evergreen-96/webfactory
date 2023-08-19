@@ -34,7 +34,7 @@ def register(request):
             user = form.save()
             user.set_password(raw_password=password)
             user.save()
-            return HttpResponse(status=200)
+            return redirect('login')
     else:
         form = RegistrationForm()
     return render(request, 'include/register.html', {'form': form,

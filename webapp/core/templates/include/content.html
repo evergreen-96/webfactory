@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}models{% endblock %}
+{% block title %}Models{% endblock %}
 
 {% block content %}
-{% for produced_model in produced_models %}
-    {{ produced_model.worker }}
-
-{% endfor %}
-
+<div class="container mt-5">
+    <h2>Produced Models</h2>
+    <ul class="list-group">
+        {% for produced_model in produced_models %}
+            <li class="list-group-item">{{ produced_model.worker }}</li>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}
