@@ -19,11 +19,11 @@ def produced_new(request):
         if form.is_valid():
             form.instance.worker = request.user
             form.save()
-            return redirect('produced_model_list')
+            return redirect('main')
 
     else:
         form = ProducedForm()
-    return render(request, 'include/testify_form.html', {'form': form, 'inst': 1,
+    return render(request, 'include/new_record_form.html', {'form': form, 'inst': 1,
                                                          'profile': request.user})
 
 
@@ -51,7 +51,7 @@ def custom_login(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('produced_model_list')
+                return redirect('main')
     else:
         form = CustomLoginForm()
     return render(request, 'include/login.html', {'form': form,
@@ -59,4 +59,4 @@ def custom_login(request):
 
 
 def logout_redirect(request):
-    return redirect('produced_model_list')
+    return redirect('main')
