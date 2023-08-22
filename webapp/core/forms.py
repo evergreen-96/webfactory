@@ -27,3 +27,8 @@ class RegistrationForm(forms.ModelForm):
 class CustomLoginForm(forms.Form):
     username = forms.CharField(label='Username')
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+
+class CustomResetPassForm(forms.Form):
+    username = forms.CharField(label='username')
+    new_password = forms.CharField(label='new password')
