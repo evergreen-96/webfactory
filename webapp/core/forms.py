@@ -12,10 +12,17 @@ class ProducedForm(forms.ModelForm):
         exclude = ('worker',)
 
 
+class ProducedEditForm(forms.ModelForm):
+    class Meta:
+        model = ProducedModel
+        fields = '__all__'
+
+
 class RegistrationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name']
+
 
     def gen_password(self):
         f_name = self.data.get('first_name').lower()
@@ -32,3 +39,4 @@ class CustomLoginForm(forms.Form):
 class CustomResetPassForm(forms.Form):
     username = forms.CharField(label='username')
     new_password = forms.CharField(label='new password')
+

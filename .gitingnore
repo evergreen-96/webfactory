@@ -1,2 +1,4 @@
 env/
 venv/
+.idea/
+webapp/core/__pycache__

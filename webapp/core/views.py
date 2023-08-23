@@ -1,15 +1,13 @@
-from django.contrib.auth import authenticate, login, get_user_model
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from core.decorators import logout_required
 from core.forms import ProducedForm, RegistrationForm, CustomLoginForm, \
-    CustomResetPassForm
+    CustomResetPassForm, ProducedEditForm
 from core.models import ProducedModel
-
-
 
 
 def produced_view(request):
@@ -77,7 +75,21 @@ def reset_password_view(request):
                 raw_password=form.cleaned_data['new_password']
             )
             found_user.save()
-            return HttpResponse('не проеби хоть этот... Пасс:' + form.cleaned_data['new_password'])
+            return HttpResponse(
+                'не проеби хоть этот... Пасс:' + form.cleaned_data[
+                    'new_password'])
     else:
-        form=CustomResetPassForm()
-    return render(request, 'include/reset_password.html', {'form':form})
+        form = CustomResetPassForm()
+    return render(request, 'include/reset_password.html', {'form': form})
+
+
+def produced_edit_view(request, pk):
+    produced_obj = get_object_or_404(ProducedModel, pk=pk)
+    if request.method == 'POST':
+        form = ProducedEditForm(request.POST, instance=produced_obj)
+        if form.is_valid():
+            form.save()
+            return redirect('main')
+    else:
+        form = ProducedEditForm(instance=produced_obj)
+    return render(request, 'forms/edit_record_form.html', {'form': form})
