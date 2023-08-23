@@ -12,8 +12,9 @@ from core.models import ProducedModel
 
 def produced_view(request):
     produced_models = ProducedModel.objects.all()
-    return render(request, 'include/content.html', {'produced_models': produced_models,
-                                                    'profile': request.user})
+    return render(request, 'include/content.html',
+                  {'produced_models': produced_models,
+                   'profile': request.user})
 
 
 @login_required
@@ -21,13 +22,18 @@ def produced_new_view(request):
     if request.method == 'POST':
         form = ProducedForm(request.POST)
         if form.is_valid():
-            form.instance.worker = request.user
-            form.save()
-            return redirect('main')
+            if not form.cleaned_data['for_last_hour'] and not form.cleaned_data[
+                'start_time']:
+                form.add_error('start_time',
+                               'This field is required if "For Last Hour" is not checked.')
+            else:
+                form.instance.worker = request.user
+                form.save()
+                return redirect('main')
     else:
         form = ProducedForm()
-    return render(request, 'forms/new_record_form.html', {'form': form, 'inst': 1,
-                                                         'profile': request.user})
+    return render(request, 'forms/new_record_form.html',
+                  {'form': form, 'inst': 1, 'profile': request.user})
 
 
 def register_view(request):
@@ -63,6 +69,7 @@ def custom_login_view(request):
 
 def logout_redirect(request):
     return redirect('main')
+
 
 @logout_required()
 def reset_password_view(request):
