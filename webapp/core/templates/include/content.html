@@ -16,6 +16,7 @@
                     <th>Start Time</th>
                     <th>End Time</th>
                     <th>For Last Hour</th>
+                    <th>Edit</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,6 +29,9 @@
                         <td>{{ produced_model.start_time }}</td>
                         <td>{{ produced_model.end_time }}</td>
                         <td>{{ produced_model.for_last_hour }}</td>
+                        <td>
+                            <a href="{% url 'editrecord' pk=produced_model.pk %}">Edit</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

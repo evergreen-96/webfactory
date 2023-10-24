@@ -1,0 +1,53 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "username": "admin",
+            "email": "admin@example.com",
+            "password": "admin",
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2023-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "core.buildingmodel",
+        "pk": 1,
+        "fields": {
+            "name": "Building 1",
+            "description": "Description for Building 1"
+        }
+    },
+    {
+        "model": "core.toolmodel",
+        "pk": 1,
+        "fields": {
+            "name": "Tool 1",
+            "description": "Description for Tool 1"
+        }
+    },
+    {
+        "model": "core.workzonemodel",
+        "pk": 1,
+        "fields": {
+            "name": "Work Zone 1",
+            "building": 1,
+            "tool": 1
+        }
+    },
+    {
+        "model": "core.producedmodel",
+        "pk": 1,
+        "fields": {
+            "worker": 1,
+            "working_zome": 1,
+            "total_parts_produced": 10,
+            "comments": "Test comment",
+            "start_time": "2023-08-23T12:00:00Z",
+            "end_time": "2023-08-23T13:00:00Z",
+            "for_last_hour": true
+        }
+    }
+]
