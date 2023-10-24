@@ -2,3 +2,4 @@ venv
 .gitignore
 .idea
 !/.gitignore
+webapp/webapp/__pycache__/
