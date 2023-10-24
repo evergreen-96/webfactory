@@ -30,7 +30,7 @@ class ProducedModel(models.Model):
     working_zome = models.ForeignKey(WorkZoneModel, on_delete=models.CASCADE)
     total_parts_produced = models.PositiveIntegerField()
     comments = models.CharField(max_length=1080, blank=True)
-    start_time = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField(blank=True)
     end_time = models.DateTimeField(default=timezone.now)
     for_last_hour = models.BooleanField(default=True)
 
@@ -39,3 +39,5 @@ class ProducedModel(models.Model):
         if self.for_last_hour:
             self.start_time = self.end_time - timedelta(hours=1)
         super(ProducedModel, self).save(*args, **kwargs)
+
+
