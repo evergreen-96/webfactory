@@ -7,7 +7,6 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.decorators import logout_required
 from core.forms import ProducedForm, RegistrationForm, CustomLoginForm, \
     CustomResetPassForm, ProducedEditForm
-from core.models import ProducedModel
 
 
 def produced_view(request):
@@ -100,3 +99,4 @@ def produced_edit_view(request, pk):
     else:
         form = ProducedEditForm(instance=produced_obj)
     return render(request, 'forms/edit_record_form.html', {'form': form})
+

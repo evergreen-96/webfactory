@@ -3,53 +3,13 @@
 {% block title %}Edit Produced Model{% endblock %}
 
 {% block content %}
+    {{ form.working_zone }}
     <div class="container mt-5">
         <h2>Edit Produced Model</h2>
         <form method="post">
             {% csrf_token %}
 
-            <div class="form-group">
-                <label for="{{ form.worker.id_for_label }}">Worker:</label>
-                {{ form.worker }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.working_zone.id_for_label }}">Working
-                    Zone:</label>
-                {{ form.working_zone }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.total_parts_produced.id_for_label }}">Total
-                    Parts Produced:</label>
-                {{ form.total_parts_produced }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.comments.id_for_label }}">Comments:</label>
-                {{ form.comments }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.start_time.id_for_label }}">Start
-                    Time:</label>
-                {{ form.start_time }}
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.end_time.id_for_label }}">End Time:</label>
-                {{ form.end_time }}
-            </div>
-
-            <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input"
-                       id="{{ form.for_last_hour.id_for_label }}"
-                       name="{{ form.for_last_hour.name }}"
-                       {% if form.for_last_hour.value %}checked{% endif %}>
-                <label class="form-check-label"
-                       for="{{ form.for_last_hour.id_for_label }}">For Last
-                    Hour</label>
-            </div>
+            {{ form.as_p }}
 
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </form>
