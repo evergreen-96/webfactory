@@ -10,3 +10,12 @@ def logout_required(function=None, logout_url='logout_redirect'):
     if function:
         return actual_decorator(function)
     return actual_decorator
+
+from django.shortcuts import redirect
+
+def check_prev_page(view_func):
+    def wrapped(request, *args, **kwargs):
+        if not request.session.get('prev_page'):
+            return redirect('main')  # Замените 'main_page' на имя вашего URL-маршрута
+        return view_func(request, *args, **kwargs)
+    return wrapped

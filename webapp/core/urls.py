@@ -1,16 +1,12 @@
 from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from core.views import produced_view, produced_new_view, register_view, \
-    custom_login_view, logout_redirect, reset_password_view, produced_edit_view
+from core.views import main_page, shift_main_page, shift_scan, endp
 
-urlpatterns = [
-    path('', produced_view, name='main'),
-    path('new/', produced_new_view, name='newrecord'),
-    path('register/', register_view, name='register'),
-    path('login/', custom_login_view, name='login'),
-    path('logout-redirect/', logout_redirect, name='logout_redirect'),
-    path('logout/', LogoutView.as_view(next_page='logout_redirect'), name='logout'),
-    path('reset-password/', reset_password_view, name='reset_pass'),
-    path('edit/<int:pk>/', produced_edit_view, name='editrecord')
+urlpatterns =[
+    path('', main_page, name='main'),
+    path('shift/', shift_main_page, name='shift_main_page'),
+    path('shift/scan', shift_scan, name='shift_scan'),
+    path('shift/endpoint/', endp, name='endpoint'),
 ]
+

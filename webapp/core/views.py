@@ -1,102 +1,85 @@
+import base64
+import io
+
+from PIL import Image
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
-from core.decorators import logout_required
-from core.forms import ProducedForm, RegistrationForm, CustomLoginForm, \
-    CustomResetPassForm, ProducedEditForm
-
-
-def produced_view(request):
-    produced_models = ProducedModel.objects.all()
-    return render(request, 'include/content.html',
-                  {'produced_models': produced_models,
-                   'profile': request.user})
+from core.decorators import logout_required, check_prev_page
+from core.models import CustomUserModel, StatDataModel
 
 
 @login_required
-def produced_new_view(request):
+def main_page(request):
+    # устанавливает сессию, чтобы нельзя было войти на страницу
+    request.session['prev_page'] = True
+    custom_user = CustomUserModel.objects.get(user=request.user)
+    current_time = timezone.now()
+    context = {
+        'custom_user': custom_user,
+        'current_time': current_time,
+    }
     if request.method == 'POST':
-        form = ProducedForm(request.POST)
-        if form.is_valid():
-            if not form.cleaned_data['for_last_hour'] and not form.cleaned_data[
-                'start_time']:
-                form.add_error('start_time',
-                               'This field is required if "For Last Hour" is not checked.')
-            else:
-                form.instance.worker = request.user
-                form.save()
-                return redirect('main')
-    else:
-        form = ProducedForm()
-    return render(request, 'forms/new_record_form.html',
-                  {'form': form, 'inst': 1, 'profile': request.user})
+        shift_start_time = timezone.now()
+        shift_end_time = None
+        num_ended_orders = 0
+        shift_time_total = None
+        good_time = None
+        bad_time = None
+        lost_time = None
+        total_bugs_time = None
+        shift = StatDataModel(
+            user=custom_user,
+            shift_start_time=shift_start_time,
+            shift_end_time=shift_end_time,
+            num_ended_orders=num_ended_orders,
+            shift_time_total=shift_time_total,
+            good_time=good_time,
+            bad_time=bad_time,
+            lost_time=lost_time,
+            total_bugs_time=total_bugs_time,
+        )
+        # shift.save()
+        return redirect('shift_main_page')
+    return render(request, 'include/user_inf_start_shift.html', context)
+@check_prev_page
+def shift_main_page(request):
+    request.session['prev_page'] = False
+    custom_user = CustomUserModel.objects.get(user=request.user)
+    current_time = timezone.now()
+    context = {
+        'custom_user': custom_user,
+        'current_time': current_time,
+    }
+    return render(request, 'include/shift_main_page.html', context)
 
-
-def register_view(request):
+@csrf_exempt
+def shift_scan(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        password = form.gen_password()
-        if form.is_valid():
-            user = form.save()
-            user.set_password(raw_password=password)
-            user.save()
-            return redirect('login')
+        image_data = request.body
+        # Здесь вы можете обработать видеопоток, полученный от клиента, и попытаться сканировать QR-код.
+        # Затем вернуть результат сканирования.
+    return render(request, 'include/shift_scan.html')
+
+
+def endp(request):
+    image_data = request.body
+    print(123123)
+    # Декодируйте данные изображения из base64
+    image_data = image_data.decode("utf-8").split(",")[1]
+    image_data = base64.b64decode(image_data)
+    try:
+        image = Image.open(io.BytesIO(image_data))
+    except Exception as e:
+        # Если возникает ошибка, это может быть из-за некорректных данных изображения
+        print(f"Ошибка при открытии изображения: {e}")
     else:
-        form = RegistrationForm()
-    return render(request, 'include/register.html', {'form': form,
-                                                     'profile': request.user})
+        # Теперь вы можете работать с объектом изображения, например, сохранить его
 
-
-def custom_login_view(request):
-    if request.method == 'POST':
-        form = CustomLoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                return redirect('main')
-    else:
-        form = CustomLoginForm()
-    return render(request, 'include/login.html', {'form': form,
-                                                  'profile': request.user})
-
-
-def logout_redirect(request):
-    return redirect('main')
-
-
-@logout_required()
-def reset_password_view(request):
-    if request.method == 'POST':
-        form = CustomResetPassForm(request.POST)
-        if form.is_valid():
-            found_user = User.objects.filter(
-                username=form.cleaned_data['username']).first()
-            found_user.set_password(
-                raw_password=form.cleaned_data['new_password']
-            )
-            found_user.save()
-            return HttpResponse(
-                'не проеби хоть этот... Пасс:' + form.cleaned_data[
-                    'new_password'])
-    else:
-        form = CustomResetPassForm()
-    return render(request, 'include/reset_password.html', {'form': form})
-
-
-def produced_edit_view(request, pk):
-    produced_obj = get_object_or_404(ProducedModel, pk=pk)
-    if request.method == 'POST':
-        form = ProducedEditForm(request.POST, instance=produced_obj)
-        if form.is_valid():
-            form.save()
-            return redirect('main')
-    else:
-        form = ProducedEditForm(instance=produced_obj)
-    return render(request, 'forms/edit_record_form.html', {'form': form})
-
+        image.save('123.png')
+    return HttpResponse('endp')

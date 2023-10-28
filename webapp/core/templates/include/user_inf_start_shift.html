@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Добро пожаловать, {{ custom_user.user.username }}!</h1>
+    <p>Должность: {{ custom_user.position }}</p>
+    <p>Рабочая зона: {{ custom_user.working_area }}</p>
+    <p>Роль: {{ custom_user.role }}</p>
+    <p>Текущее время: {{ current_time|date:"Y-m-d H:i:s" }}</p>
+
+
+    <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-primary">Начать смену</button>
+    </form>
+
+
+{% endblock %}

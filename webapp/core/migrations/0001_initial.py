@@ -2,6 +2,7 @@
 
 import django.utils.timezone
 from django.conf import settings
+from django.core import serializers
 from django.db import migrations, models
 
 

@@ -9,29 +9,33 @@ class RoleModel(models.Model):
     role_name = models.CharField(
         choices=[('worker', 'worker'), ('admin', 'admin')], max_length=64)
 
+    def __str__(self):
+        return self.role_name
+
 
 class WorkingAreaModel(models.Model):
     area_name = models.CharField(max_length=128)
 
+    def __str__(self):
+        return self.area_name
+
 
 class PositionsModel(models.Model):
     position_name = models.CharField(max_length=128)
-    # посмотреть расширения.
     chill_time = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.position_name
 
 
 class CustomUserModel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    username = models.CharField(max_length=64, unique=True)
     phone_number = models.CharField(max_length=64, unique=True)
     role = models.ForeignKey(RoleModel, on_delete=models.DO_NOTHING)
     position = models.ForeignKey(PositionsModel, on_delete=models.DO_NOTHING)
     working_area = models.ForeignKey(WorkingAreaModel,
                                      on_delete=models.DO_NOTHING)
 
-
-    def __str__(self):
-        return self.username
 
 
 class StatDataModel(models.Model):
