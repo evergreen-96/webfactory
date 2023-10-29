@@ -69,7 +69,7 @@ def shift_scan(request):
     if request.method == 'POST':
         image_data = request.FILES.get('image')
         image = Image.open(image_data)
-        resized = image.resize((145, 145))
+        resized = image.resize((500, 500))
         decoded_qr_img = decode(resized)
         print(decoded_qr_img)
         try:
