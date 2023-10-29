@@ -13,6 +13,8 @@ from django.views.decorators.csrf import csrf_exempt
 from core.decorators import logout_required, check_prev_page
 from core.models import CustomUserModel, StatDataModel
 
+from pyzbar.pyzbar import decode
+
 
 @login_required
 def main_page(request):
@@ -47,6 +49,8 @@ def main_page(request):
         # shift.save()
         return redirect('shift_main_page')
     return render(request, 'include/user_inf_start_shift.html', context)
+
+
 @check_prev_page
 def shift_main_page(request):
     request.session['prev_page'] = False
@@ -58,28 +62,23 @@ def shift_main_page(request):
     }
     return render(request, 'include/shift_main_page.html', context)
 
+
 @csrf_exempt
 def shift_scan(request):
+    decoded_qr_data = ""
     if request.method == 'POST':
-        image_data = request.body
-        # Здесь вы можете обработать видеопоток, полученный от клиента, и попытаться сканировать QR-код.
-        # Затем вернуть результат сканирования.
-    return render(request, 'include/shift_scan.html')
+        image_data = request.FILES.get('image')
+        image = Image.open(image_data)
+        resized = image.resize((145, 145))
+        decoded_qr_img = decode(resized)
+        print(decoded_qr_img)
+        try:
+            cropped_data = decoded_qr_img[0].data
+            decoded_qr_data = cropped_data.decode('utf-8')
+        except IndexError as e:
+            print('Ошибка при декодировании QR-кода:', e)
+            decoded_qr_img = 'Ошибка в декодировании'
+
+    return render(request, 'include/shift_scan.html', {'decoded_qr_data': decoded_qr_data})
 
 
-def endp(request):
-    image_data = request.body
-    print(123123)
-    # Декодируйте данные изображения из base64
-    image_data = image_data.decode("utf-8").split(",")[1]
-    image_data = base64.b64decode(image_data)
-    try:
-        image = Image.open(io.BytesIO(image_data))
-    except Exception as e:
-        # Если возникает ошибка, это может быть из-за некорректных данных изображения
-        print(f"Ошибка при открытии изображения: {e}")
-    else:
-        # Теперь вы можете работать с объектом изображения, например, сохранить его
-
-        image.save('123.png')
-    return HttpResponse('endp')
