@@ -16,15 +16,30 @@ from core.models import CustomUserModel, StatDataModel
 from pyzbar.pyzbar import decode
 
 
+def decode_photo(image_data):
+    """
+    decode image_data
+    return :str
+    """
+    image = Image.open(image_data)
+    resized = image.resize((500, 500))
+    decoded_qr_img = decode(resized)
+    try:
+        cropped_data = decoded_qr_img[0].data
+        decoded_qr_data = cropped_data.decode('utf-8')
+    except IndexError:
+        decoded_qr_data = 'Ошибка в декодировании'
+    print(decoded_qr_data)
+    return decoded_qr_data
+
+
 @login_required
 def main_page(request):
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
-    custom_user = CustomUserModel.objects.get(user=request.user)
-    current_time = timezone.now()
     context = {
-        'custom_user': custom_user,
-        'current_time': current_time,
+        'custom_user': CustomUserModel.objects.get(user=request.user),
+        'current_time': timezone.now(),
     }
     if request.method == 'POST':
         shift_start_time = timezone.now()
@@ -36,7 +51,7 @@ def main_page(request):
         lost_time = None
         total_bugs_time = None
         shift = StatDataModel(
-            user=custom_user,
+            user=CustomUserModel.objects.get(user=request.user),
             shift_start_time=shift_start_time,
             shift_end_time=shift_end_time,
             num_ended_orders=num_ended_orders,
@@ -62,40 +77,35 @@ def shift_main_page(request):
     }
     return render(request, 'include/shift_first_page.html', context)
 
-def decode_photo(image_data):
-    """
-    decode image_data
-    return :str
-    """
-    image = Image.open(image_data)
-    resized = image.resize((500, 500))
-    decoded_qr_img = decode(resized)
-    try:
-        cropped_data = decoded_qr_img[0].data
-        decoded_qr_data = cropped_data.decode('utf-8')
-    except IndexError:
-        decoded_qr_data = 'Ошибка в декодировании'
-    print(decoded_qr_data)
-    return decoded_qr_data
-
 
 @csrf_exempt
 def shift_scan(request):
     decoded_qr_data = ""
-    if request.method == 'POST':
+    if request.POST.get('action') == 'scan':
         image_data = request.FILES.get('image')
         if image_data:
             decoded_qr_data = decode_photo(image_data)
         else:
             part_name = request.POST.get('partname')
             decoded_qr_data = part_name
+    if request.POST.get('action') == 'upload':
+        print(request)
     return render(request, 'include/shift_scan.html', {'decoded_qr_data': decoded_qr_data})
 
 
 def shift_part_qaun(request):
     selected_value = request.POST.get('custom_value', '')
     button_value = request.POST.get('button', '')
-    selected_button = button_value if button_value else selected_value
+    selected_button = selected_value if selected_value else button_value
     if request.method == 'POST':
-        print(selected_button)
+        print(selected_value)
     return render(request, 'include/shift_part_qaun.html', {'selected_value': selected_button})
+
+def shift_setup(request):
+
+    user = CustomUserModel.objects.get(user=request.user)
+    context = {
+        'custom_user': user,
+        'StatDataModel': 56,
+    }
+    return render(request, 'include/shift_setup.html', context)

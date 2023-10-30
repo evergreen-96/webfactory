@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <form method="post" enctype="multipart/form-data" >
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="image" id="imageFile" capture="user" accept="image/*" />
+        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"/>
         <input type="text" name="partname">
-        <button id="scanButton" type="submit" value="upload" class="btn btn-success">Сканировать</button>
+        <button type="submit" name="action" value="scan" class="btn btn-secondary">Сканировать</button>
+        <button type="submit" name="action" value="upload" class="btn btn-success">Отправить</button>
     </form>
-{{ decoded_qr_data }}
+
+    {{ decoded_qr_data }}
+
+
 {% endblock %}
