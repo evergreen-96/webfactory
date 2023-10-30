@@ -1,15 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"/>
-        <input type="text" name="partname">
-        <button type="submit" name="action" value="scan" class="btn btn-secondary">Сканировать</button>
-        <button type="submit" name="action" value="upload" class="btn btn-success">Отправить</button>
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <form id="scanForm" method="post" action="{% url 'shift_scan' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="imageFile" class="form-label">Выберите изображение</label>
+                        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
+                               class="form-control">
+                    </div>
+                    <button name="action" value="scan" class="btn btn-secondary btn-lg">Сканировать</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <form id="uploadForm" method="post" action="{% url 'shift_scan' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="partname" class="form-label">Введите название</label>
+                        <input type="text" name="partname" id="partname" value="" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success btn-lg">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-    {{ decoded_qr_data }}
 
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', function (event) {
+            var formData = new FormData(this).get('partname');
+            if (formData === '') {
+                alert('Поле не может быть пустым!')
+                }
+            }
+        );
 
+        document.getElementById('scanForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var url = '/qr-decoder/';  // URL для обработки формы на сервере
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        var response = xhr.responseText;
+                        if (response === "Ошибка в декодировании") {
+                            alert("QR код не распознан, попробуйте еще раз");
+                        } else {
+                            document.getElementById('partname').value = response;
+                        }
+                    } else {
+                        alert("Ошибка, попробуйте еще раз");
+                    }
+                }
+            };
+            xhr.send(formData);
+        });
+    </script>
 {% endblock %}
