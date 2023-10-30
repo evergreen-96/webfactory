@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h1 class="text-center mb-5">Название детали: {{ request.session.partname }}</h1>
+    <h1 class="text-center mb-5">Название детали: {{ request.session.partname }}</h1>
     <div class="container">
         <h1 class="mt-5">Введите количество деталей:</h1>
         <form method="post" action="">
@@ -25,9 +25,7 @@
             <input type="hidden" id="button" name="button" value="">
 
             <div class="mt-4">
-                <button type="button" class="btn btn-success w-100" data-bs-toggle="modal"
-                        onclick="showModal()">Отправить
-                </button>
+                <button id="sendBtn" type="button" class="btn btn-success w-100">Отправить</button>
             </div>
         </form>
     </div>
@@ -54,8 +52,8 @@
         </div>
     </div>
 
-        <!-- Подключение библиотеки Bootstrap -->
-     <script>
+    <!-- Подключение библиотеки Bootstrap -->
+    <script>
         // Функция, вызываемая при нажатии на кнопку
         function updateValue(buttonValue) {
             // Устанавливаем значение в поле input
@@ -63,15 +61,17 @@
         }
 
         // Функция, вызываемая при нажатии на кнопку "Отправить"
-        function showModal() {
+        document.getElementById('sendBtn').addEventListener('click', function () {
             var customValue = document.getElementById('custom_value').value;
-            // Обновляем значение в модальном окне
+            if (customValue === ''){
+                alert('Поле не может быть путым!')
+            }
+            else{
             document.getElementById('selected_value_confirmation').innerText = customValue;
-
-            // Открываем модальное окно
             var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            confirmationModal.show();
-        }
+            confirmationModal.show();}
+        });
+
     </script>
 
 {% endblock %}
