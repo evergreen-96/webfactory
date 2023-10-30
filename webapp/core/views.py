@@ -16,11 +16,14 @@ from core.models import CustomUserModel, StatDataModel
 from pyzbar.pyzbar import decode
 
 
-def decode_photo(image_data):
+def decode_photo(request):
     """
+    API endpoint to /qr-decoder/
     decode image_data
+    request: request
     return :str
     """
+    image_data = request.FILES.get('image')
     image = Image.open(image_data)
     resized = image.resize((500, 500))
     decoded_qr_img = decode(resized)
@@ -29,12 +32,12 @@ def decode_photo(image_data):
         decoded_qr_data = cropped_data.decode('utf-8')
     except IndexError:
         decoded_qr_data = 'Ошибка в декодировании'
-    print(decoded_qr_data)
-    return decoded_qr_data
+    return HttpResponse(decoded_qr_data)
 
 
 @login_required
 def main_page(request):
+
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
     context = {
@@ -80,17 +83,11 @@ def shift_main_page(request):
 
 @csrf_exempt
 def shift_scan(request):
-    decoded_qr_data = ""
-    if request.POST.get('action') == 'scan':
-        image_data = request.FILES.get('image')
-        if image_data:
-            decoded_qr_data = decode_photo(image_data)
-        else:
-            part_name = request.POST.get('partname')
-            decoded_qr_data = part_name
-    if request.POST.get('action') == 'upload':
-        print(request)
-    return render(request, 'include/shift_scan.html', {'decoded_qr_data': decoded_qr_data})
+    if request.method == 'POST':
+        partname = request.POST.get('partname')
+        request.session['partname'] = partname
+        return redirect('shift_part_qaun')
+    return render(request, 'include/shift_scan.html')
 
 
 def shift_part_qaun(request):
