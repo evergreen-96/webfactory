@@ -66,10 +66,15 @@
             if (customValue === '') {
                 alert('Поле не может быть пустым!');
             } else {
-                document.getElementById('selected_value_confirmation').innerText = customValue;
-
-                var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-                confirmationModal.show();
+                {#Вариант с модалкой, второй вариант с системными#}
+                {#document.getElementById('selected_value_confirmation').innerText = customValue;#}
+                {##}
+                {#var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));#}
+                {#confirmationModal.show();#}
+                if (confirm('OK??') === true) {
+                    console.log('TRUE');
+                    document.querySelector('form').submit();
+                }
             }
         });
 
