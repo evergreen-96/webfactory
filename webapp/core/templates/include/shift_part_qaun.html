@@ -62,21 +62,23 @@
 
         // Функция, вызываемая при нажатии на кнопку "Отправить"
         document.getElementById('sendBtn').addEventListener('click', function () {
-            var customValue = document.getElementById('custom_value').value;
+            var customValue = document.getElementById('custom_value').value.trim();
             if (customValue === '') {
                 alert('Поле не может быть пустым!');
+                event.preventDefault();
             } else {
                 {#Вариант с модалкой, второй вариант с системными#}
-                {#document.getElementById('selected_value_confirmation').innerText = customValue;#}
-                {##}
-                {#var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));#}
-                {#confirmationModal.show();#}
-                if (confirm('OK??') === true) {
-                    console.log('TRUE');
-                    document.querySelector('form').submit();
-                }
-            }
-        });
+                document.getElementById('selected_value_confirmation').innerText = customValue;
+
+                var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                confirmationModal.show();
+            {#    if (confirm('OK??') === true) {#}
+            {#        console.log('TRUE');#}
+            {#        document.querySelector('form').submit();#}
+            {#    }#}
+            {# }} #} }}
+        )
+
 
     </script>
 

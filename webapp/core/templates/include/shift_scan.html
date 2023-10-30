@@ -30,12 +30,12 @@
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function (event) {
-            var formData = new FormData(this).get('partname');
-            if (formData === '') {
-                alert('Поле не может быть пустым!')
-                }
-            }
-        );
+    var formData = document.getElementById('partname').value.trim();
+    if (formData === '') {
+        alert('Поле не может быть пустым!');
+        event.preventDefault(); // Эта строка предотвращает отправку формы
+    }
+});
 
         document.getElementById('scanForm').addEventListener('submit', function (event) {
             event.preventDefault();

@@ -1,16 +1,11 @@
-import base64
-import io
-
 from PIL import Image
-from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
-from core.decorators import logout_required, check_prev_page
+from core.decorators import check_prev_page
 from core.models import CustomUserModel, StatDataModel
 
 from pyzbar.pyzbar import decode
@@ -96,6 +91,7 @@ def shift_part_qaun(request):
     selected_button = selected_value if selected_value else button_value
     if request.method == 'POST':
         print(selected_value)
+        return redirect('main')
     return render(request, 'include/shift_part_qaun.html', {'selected_value': selected_button})
 
 def shift_setup(request):
