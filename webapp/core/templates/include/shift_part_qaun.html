@@ -63,13 +63,14 @@
         // Функция, вызываемая при нажатии на кнопку "Отправить"
         document.getElementById('sendBtn').addEventListener('click', function () {
             var customValue = document.getElementById('custom_value').value;
-            if (customValue === ''){
-                alert('Поле не может быть путым!')
+            if (customValue === '') {
+                alert('Поле не может быть пустым!');
+            } else {
+                document.getElementById('selected_value_confirmation').innerText = customValue;
+
+                var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                confirmationModal.show();
             }
-            else{
-            document.getElementById('selected_value_confirmation').innerText = customValue;
-            var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-            confirmationModal.show();}
         });
 
     </script>
