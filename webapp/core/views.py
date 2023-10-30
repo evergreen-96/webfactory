@@ -60,7 +60,23 @@ def shift_main_page(request):
         'custom_user': custom_user,
         'current_time': current_time,
     }
-    return render(request, 'include/shift_main_page.html', context)
+    return render(request, 'include/shift_first_page.html', context)
+
+def decode_photo(image_data):
+    """
+    decode image_data
+    return :str
+    """
+    image = Image.open(image_data)
+    resized = image.resize((500, 500))
+    decoded_qr_img = decode(resized)
+    try:
+        cropped_data = decoded_qr_img[0].data
+        decoded_qr_data = cropped_data.decode('utf-8')
+    except IndexError:
+        decoded_qr_data = 'Ошибка в декодировании'
+    print(decoded_qr_data)
+    return decoded_qr_data
 
 
 @csrf_exempt
@@ -68,17 +84,18 @@ def shift_scan(request):
     decoded_qr_data = ""
     if request.method == 'POST':
         image_data = request.FILES.get('image')
-        image = Image.open(image_data)
-        resized = image.resize((500, 500))
-        decoded_qr_img = decode(resized)
-        print(decoded_qr_img)
-        try:
-            cropped_data = decoded_qr_img[0].data
-            decoded_qr_data = cropped_data.decode('utf-8')
-        except IndexError as e:
-            print('Ошибка при декодировании QR-кода:', e)
-            decoded_qr_img = 'Ошибка в декодировании'
-
+        if image_data:
+            decoded_qr_data = decode_photo(image_data)
+        else:
+            part_name = request.POST.get('partname')
+            decoded_qr_data = part_name
     return render(request, 'include/shift_scan.html', {'decoded_qr_data': decoded_qr_data})
 
 
+def shift_part_qaun(request):
+    selected_value = request.POST.get('custom_value', '')
+    button_value = request.POST.get('button', '')
+    selected_button = button_value if button_value else selected_value
+    if request.method == 'POST':
+        print(selected_button)
+    return render(request, 'include/shift_part_qaun.html', {'selected_value': selected_button})

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="mt-5">Введите значение или выберите кнопку:</h1>
+        <form method="post" action="">
+            {% csrf_token %}
+            <div class="form-group">
+                <input type="text" class="form-control" id="custom_value" name="custom_value"
+                       placeholder="Введите значение" inputmode="numeric">
+            </div>
+            <div class="btn-group" role="group" aria-label="Кнопки">
+                <button type="button" class="btn btn-primary" onclick="updateValue('1')">1</button>
+                <button type="button" class="btn btn-primary" onclick="updateValue('2')">2</button>
+                <button type="button" class="btn btn-primary" onclick="updateValue('3')">3</button>
+                <button type="button" class="btn btn-primary" onclick="updateValue('4')">4</button>
+            </div>
+            <div class="mt-3">
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmationModal">
+                    Отправить
+                </button>
+            </div>
+        </form>
+        <div class="mt-4">
+            <h2>Выбранная кнопка или введенное значение: <span id="selected_value"></span></h2>
+        </div>
+    </div>
+
+    <!-- Модальное окно с подтверждением -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmationModalLabel">Подтверждение</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Вы уверены, что хотите отправить значение: <span id="selected_value_confirmation"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-success" id="confirmButton">Подтвердить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateValue(buttonValue) {
+            document.getElementById('custom_value').value = buttonValue;
+            document.getElementById('selected_value_confirmation').innerText = buttonValue;
+        }
+
+        document.getElementById('confirmButton').addEventListener('click', function () {
+            document.querySelector('form').submit();
+        });
+    </script>
+{% endblock %}

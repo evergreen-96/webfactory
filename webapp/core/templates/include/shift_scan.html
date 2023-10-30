@@ -1,22 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Фотосъемка с камеры</h1>
-    {{ decoded_qr_data }}
-    <video id="webcam" autoplay></video>
-    <button id="captureButton">Сделать фото</button>
-    <canvas id="photoCanvas"></canvas>
-    <a id="downloadLink" style="display: none;" download="photo.jpg">Скачать фото</a>
-
-    <h1>Сканирование QR-кодов с камеры</h1>
-
-    <video id="video" autoplay></video>
-    <canvas id="canvas" style="display: none;"></canvas>
-    <p id="resultText"></p>
 
     <form method="post" enctype="multipart/form-data" >
         {% csrf_token %}
         <input type="file" name="image" id="imageFile" capture="user" accept="image/*" />
+        <input type="text" name="partname">
         <button id="scanButton" type="submit" value="upload" class="btn btn-success">Сканировать</button>
     </form>
 {{ decoded_qr_data }}
