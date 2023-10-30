@@ -2,11 +2,9 @@
 
 {% block content %}
 
-
-
-
+<h1 class="text-center mb-5">Название детали: {{ request.session.partname }}</h1>
     <div class="container">
-        <h1 class="mt-5">Введите значение или выберите кнопку:</h1>
+        <h1 class="mt-5">Введите количество деталей:</h1>
         <form method="post" action="">
             {% csrf_token %}
             <div class="form-group">
