@@ -95,10 +95,17 @@ def shift_part_qaun(request):
     return render(request, 'include/shift_part_qaun.html', {'selected_value': selected_button})
 
 def shift_setup(request):
-
     user = CustomUserModel.objects.get(user=request.user)
     context = {
         'custom_user': user,
         'StatDataModel': 56,
     }
     return render(request, 'include/shift_setup.html', context)
+
+
+def error_report(request):
+    user = CustomUserModel.objects.get(user=request.user)
+    context = {
+        'custom_user': user,
+    }
+    return render(request, 'include/error_report.html', context)
