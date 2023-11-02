@@ -68,6 +68,7 @@ class StatOrdersModel(models.Model):
     def is_ended(self):
         return self.order_end_working_time is not None
 
+
 class StatBugsModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
     order = models.ForeignKey(StatOrdersModel, on_delete=models.DO_NOTHING,

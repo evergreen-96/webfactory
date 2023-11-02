@@ -48,6 +48,45 @@ def decode_photo(request):
     return HttpResponse(decoded_qr_data)
 
 
+def create_or_get_last_order(user_profile, shift):
+    # Проверка, если смена не закончилась, то создаем новый заказ, иначе получаем последний
+    if shift.shift_end_time is None:
+        last_order = StatOrdersModel(
+            user=user_profile,
+            stat_data=shift,
+            part_name='',
+            num_parts=0,
+            order_start_time=None,
+            order_scan_time=None,
+            order_start_working_time=None,
+            order_machine_start_time=None,
+            order_machine_end_time=None,
+            order_end_working_time=None,
+            order_bugs_time=None
+        )
+        last_order.save()
+    else:
+        last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+
+    last_order.order_start_time = timezone.now()
+    last_order.save()
+    return last_order
+
+def end_shift(shift):
+    shift.shift_end_time = timezone.now()
+    # Считаем количество заказов
+    num_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
+    shift.num_ended_orders = num_orders
+    # Считаем время багов
+    total_bugs_time = shift.stat_orders.aggregate(
+        total_bugs_time=Sum('order_bugs_time')
+    ).get('total_bugs_time')
+
+    shift.total_bugs_time = total_bugs_time
+    shift.save()
+
+
+
 @login_required
 def main_page(request):
     """
@@ -85,7 +124,7 @@ def shift_main_page(request):
     Страница начала смены
     (можно начать новую деталь или закончить смену)
     """
-    # устанавливает сессию, чтобы нельзя было войти на страницу
+    # Устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = False
     user_profile = CustomUserModel.objects.get(user=request.user)
     shift = StatDataModel.objects.filter(user=user_profile).last()
@@ -95,42 +134,13 @@ def shift_main_page(request):
         'current_time': current_time,
     }
 
-    if request.method == 'POST' and 'endShift' not in request.POST:
-        # проверка, если смена не закончилась, то создаем новый заказ, иначе изменяем
-        if shift.shift_end_time is None:
-            last_order = StatOrdersModel(
-                user=user_profile,
-                stat_data=shift,
-                part_name='',
-                num_parts=0,
-                order_start_time=None,
-                order_scan_time=None,
-                order_start_working_time=None,
-                order_machine_start_time=None,
-                order_machine_end_time=None,
-                order_end_working_time=None,
-                order_bugs_time=None
-            )
-            last_order.save()
-        else:
-            last_order = StatOrdersModel.objects.filter(user=user_profile).last()
-
-        last_order.order_start_time = timezone.now()
-        last_order.save()
-        return redirect('shift_scan')
-    elif request.method == 'POST' and 'endShift' in request.POST:
-        shift.shift_end_time = timezone.now()
-        # считаем количество заказов
-        num_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
-        shift.num_ended_orders = num_orders
-        # считаем время багов
-        total_bugs_time = shift.stat_orders.aggregate(
-                total_bugs_time=Sum('order_bugs_time')
-            ).get('total_bugs_time')
-
-        shift.total_bugs_time = total_bugs_time
-        shift.save()
-        return redirect('main')
+    if request.method == 'POST':
+        if 'endShift' not in request.POST:
+            last_order = create_or_get_last_order(user_profile, shift)
+            return redirect('shift_scan')
+        elif 'endShift' in request.POST:
+            end_shift(shift)
+            return redirect('main')
 
     return render(request, 'include/shift_first_page.html', context)
 
