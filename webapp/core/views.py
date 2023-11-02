@@ -3,6 +3,7 @@ from types import NoneType
 
 from PIL import Image
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -93,6 +94,7 @@ def shift_main_page(request):
         'custom_user': user_profile,
         'current_time': current_time,
     }
+
     if request.method == 'POST' and 'endShift' not in request.POST:
         # проверка, если смена не закончилась, то создаем новый заказ, иначе изменяем
         if shift.shift_end_time is None:
@@ -118,8 +120,15 @@ def shift_main_page(request):
         return redirect('shift_scan')
     elif request.method == 'POST' and 'endShift' in request.POST:
         shift.shift_end_time = timezone.now()
+        # считаем количество заказов
         num_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
         shift.num_ended_orders = num_orders
+        # считаем время багов
+        total_bugs_time = shift.stat_orders.aggregate(
+                total_bugs_time=Sum('order_bugs_time')
+            ).get('total_bugs_time')
+
+        shift.total_bugs_time = total_bugs_time
         shift.save()
         return redirect('main')
 

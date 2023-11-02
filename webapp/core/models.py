@@ -46,7 +46,7 @@ class StatDataModel(models.Model):
     good_time = models.TimeField(blank=True, null=True)
     bad_time = models.TimeField(blank=True, null=True)
     lost_time = models.TimeField(blank=True, null=True)
-    total_bugs_time = models.TimeField(blank=True, null=True)
+    total_bugs_time = models.DurationField(blank=True, null=True)
 
     def is_ended(self):
         return self.shift_end_time is not None
