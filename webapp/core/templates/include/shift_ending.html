@@ -26,7 +26,11 @@
                             сталлаже готовой продукции</p>
                     </div>
                 </div>
-                <a href="#" class="btn btn-primary mt-3">Завершить</a>
+                <form  method="post">
+                    {% csrf_token %}
+                    <button name="orderEnded" type="submit" class="btn btn-primary mt-3">Завершить заказ</button>
+                </form>
+
             </div>
         </div>
     </div>

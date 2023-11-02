@@ -48,6 +48,8 @@ class StatDataModel(models.Model):
     lost_time = models.TimeField(blank=True, null=True)
     total_bugs_time = models.TimeField(blank=True, null=True)
 
+    def is_ended(self):
+        return self.shift_end_time is not None
 
 class StatOrdersModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
@@ -59,8 +61,10 @@ class StatOrdersModel(models.Model):
     order_machine_start_time = models.DateTimeField(blank=True, null=True)
     order_machine_end_time = models.DateTimeField(blank=True, null=True)
     order_end_working_time = models.DateTimeField(blank=True, null=True)
-    order_bugs_time = models.TimeField(blank=True, null=True)
+    order_bugs_time = models.DurationField(blank=True, null=True)
 
+    def is_ended(self):
+        return self.order_end_working_time is not None
 
 class StatBugsModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
@@ -69,4 +73,4 @@ class StatBugsModel(models.Model):
     bug_description = models.CharField(max_length=1028)
     bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
-    is_solved = models.BooleanField(default=False, editable=False)
+    is_solved = models.BooleanField(default=False)

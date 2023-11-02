@@ -15,7 +15,7 @@
                 </form>
             </div>
             <div class="col-md-6">
-                <form id="uploadForm" method="post" action="{% url 'shift_scan' %}">
+                <form id="uploadForm" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="partname" class="form-label">Введите название</label>
