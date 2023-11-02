@@ -16,16 +16,17 @@
 
         <div class="row mt-4">
             <div class="col-md-12">
-                <h1 class="display-5">Подготовка и наладка</h1>
+                <h1 class="display-5">Заключительные работы</h1>
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
                         <p class="card-text">{{ request.session.partname }} в
                             количестве {{ request.session.quantity }}</p>
+                        <p class="card-text">Нажмите "Завершить", если деталь на
+                            сталлаже готовой продукции</p>
                     </div>
                 </div>
-                <a href="{% url 'shift_processing' %}"
-                   class="btn btn-primary mt-3">Продолжить</a>
+                <a href="#" class="btn btn-primary mt-3">Завершить</a>
             </div>
         </div>
     </div>

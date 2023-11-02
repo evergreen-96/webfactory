@@ -13,19 +13,20 @@
                     {{ current_time|date:"Y-m-d H:i:s" }}</p>
             </div>
         </div>
-
+        {% block bug_report_modal %}{% endblock %}
         <div class="row mt-4">
             <div class="col-md-12">
-                <h1 class="display-5">Подготовка и наладка</h1>
+                <h1 class="display-5">Обработка станком</h1>
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
                         <p class="card-text">{{ request.session.partname }} в
                             количестве {{ request.session.quantity }}</p>
+                        <p class="card-text">Нажмите "Продолжить" после
+                            окончания обработки детали станком</p>
                     </div>
                 </div>
-                <a href="{% url 'shift_processing' %}"
-                   class="btn btn-primary mt-3">Продолжить</a>
+                <a href="{% url 'shift_ending' %}" class="btn btn-primary mt-3">Продолжить</a>
             </div>
         </div>
     </div>

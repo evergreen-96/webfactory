@@ -4,11 +4,10 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from pyzbar.pyzbar import decode
 
 from core.decorators import check_prev_page
 from core.models import CustomUserModel, StatDataModel
-
-from pyzbar.pyzbar import decode
 
 
 def decode_photo(request):
@@ -86,21 +85,30 @@ def shift_scan(request):
 
 
 def shift_part_qaun(request):
-    selected_value = request.POST.get('custom_value', '')
+    selected_value = request.POST.get('quantity', '')
     button_value = request.POST.get('button', '')
     selected_button = selected_value if selected_value else button_value
     if request.method == 'POST':
-        print(selected_value)
-        return redirect('main')
-    return render(request, 'include/shift_part_qaun.html', {'selected_value': selected_button})
+        request.session['quantity'] = selected_value
+        return redirect('shift_setup')
+    return render(request, 'include/shift_part_qaun.html',
+                  {'selected_value': selected_button})
+
 
 def shift_setup(request):
     user = CustomUserModel.objects.get(user=request.user)
     context = {
         'custom_user': user,
-        'StatDataModel': 56,
     }
     return render(request, 'include/shift_setup.html', context)
+
+
+def shift_processing(request):
+    return render(request, 'include/shift_processing.html')
+
+
+def shift_ending(request):
+    return render(request, 'include/shift_ending.html')
 
 
 def error_report(request):
@@ -108,4 +116,5 @@ def error_report(request):
     context = {
         'custom_user': user,
     }
+    print(request.POST)
     return render(request, 'include/error_report.html', context)

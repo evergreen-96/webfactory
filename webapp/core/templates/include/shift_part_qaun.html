@@ -8,16 +8,26 @@
         <form method="post" action="">
             {% csrf_token %}
             <div class="form-group">
-                <input type="text" class="form-control" id="custom_value" name="custom_value"
+                <input type="text" class="form-control" id="quantity"
+                       name="quantity"
                        placeholder="Введите значение" inputmode="numeric">
             </div>
 
             <div class="mt-4">
-                <div class="btn-group-vertical d-grid gap-2" role="group" aria-label="Кнопки">
-                    <button type="button" class="btn btn-primary btn-lg" onclick="updateValue('1')">1</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="updateValue('2')">2</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="updateValue('3')">3</button>
-                    <button type="button" class="btn btn-primary btn-lg" onclick="updateValue('4')">4</button>
+                <div class="btn-group-vertical d-grid gap-2" role="group"
+                     aria-label="Кнопки">
+                    <button type="button" class="btn btn-primary btn-lg"
+                            onclick="updateValue('1')">1
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg"
+                            onclick="updateValue('2')">2
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg"
+                            onclick="updateValue('3')">3
+                    </button>
+                    <button type="button" class="btn btn-primary btn-lg"
+                            onclick="updateValue('4')">4
+                    </button>
                 </div>
             </div>
 
@@ -51,7 +61,7 @@
             </div>
         </div>
     </div>
-        <a  href="{% url 'error_report' %}" class="btn btn-danger">Сообщить о проблеме</a>
+
 
 
     <!-- Подключение библиотеки Bootstrap -->
@@ -59,22 +69,22 @@
         // Функция, вызываемая при нажатии на кнопку
         function updateValue(buttonValue) {
             // Устанавливаем значение в поле input
-            document.getElementById('custom_value').value = buttonValue;
+            document.getElementById('quantity').value = buttonValue;
         }
 
         // Функция, вызываемая при нажатии на кнопку "Отправить"
         document.getElementById('sendBtn').addEventListener('click', function () {
-            var customValue = document.getElementById('custom_value').value.trim();
-            if (customValue === '') {
+            var quantity = document.getElementById('quantity').value.trim();
+            if (quantity === '') {
                 alert('Поле не может быть пустым!');
                 event.preventDefault();
             } else {
                 {#Вариант с модалкой, второй вариант с системными#}
-                document.getElementById('selected_value_confirmation').innerText = customValue;
+                document.getElementById('selected_value_confirmation').innerText = quantity;
 
                 var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
                 confirmationModal.show();
-            {#    if (confirm('OK??') === true) {#}
+                {#    if (confirm('OK??') === true) {#}
             {#        console.log('TRUE');#}
             {#        document.querySelector('form').submit();#}
             {#    }#}
