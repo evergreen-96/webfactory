@@ -53,6 +53,7 @@ class StatDataModel(models.Model):
 
 class StatOrdersModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
+    stat_data = models.ForeignKey(StatDataModel, related_name='stat_orders', on_delete=models.CASCADE)
     part_name = models.CharField(max_length=256)
     num_parts = models.PositiveIntegerField()
     order_start_time = models.DateTimeField(blank=True, null=True)
@@ -62,6 +63,7 @@ class StatOrdersModel(models.Model):
     order_machine_end_time = models.DateTimeField(blank=True, null=True)
     order_end_working_time = models.DateTimeField(blank=True, null=True)
     order_bugs_time = models.DurationField(blank=True, null=True)
+
 
     def is_ended(self):
         return self.order_end_working_time is not None

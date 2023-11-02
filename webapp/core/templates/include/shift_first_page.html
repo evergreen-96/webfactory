@@ -7,13 +7,14 @@
     <p>Роль: {{ custom_user.role }}</p>
     <p>Текущее время: {{ current_time|date:"Y-m-d H:i:s" }}</p>
 
-
-    {#    <a href="{% url 'shift_scan' %}" class="btn btn-primary">Начать новую деталь</a>#}
     <form method="post">
         {% csrf_token %}
-        <button id="post-button" class="btn btn-primary ">Отправить</button>
+        <button id="post-button" class="btn btn-primary ">Начать новую деталь</button>
     </form>
 
-    <a href="{% url 'shift_main_page' %}" class="btn btn-secondary">Закончить смену</a>
+    <form method="post">
+        {% csrf_token %}
+        <button name="endShift" id="post-button" class="btn btn-primary ">Закончить смену</button>
+    </form>
 
 {% endblock %}

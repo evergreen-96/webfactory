@@ -14,6 +14,20 @@ from core.models import CustomUserModel, StatDataModel, StatBugsModel, \
     StatOrdersModel
 
 
+def count_bugs_duration(last_order):
+    """
+    count bugs duration in last order
+    return: timedelta
+    """
+    total_bugs = StatBugsModel.objects.filter(order=last_order).filter(is_solved=True)
+    total_duration = timedelta()
+
+    for bug in total_bugs:
+        one_bug_duration = bug.bug_end_time - bug.bug_start_time
+        total_duration += one_bug_duration
+    return total_duration
+
+
 def decode_photo(request):
     """
     API endpoint to /qr-decoder/
@@ -37,13 +51,13 @@ def decode_photo(request):
 def main_page(request):
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
-
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
     context = {
         'custom_user': user_profile,
         'current_time': timezone.now(),
     }
+
     if request.method == 'POST' and last_order is not NoneType:
         shift = StatDataModel(
             user=user_profile,
@@ -60,6 +74,7 @@ def main_page(request):
 
         order = StatOrdersModel(
             user=user_profile,
+            stat_data = shift,
             part_name='',
             num_parts=0,
             order_start_time=None,
@@ -80,15 +95,24 @@ def shift_main_page(request):
     request.session['prev_page'] = False
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+    last_shift = StatDataModel.objects.filter(user=user_profile).last()
     current_time = timezone.now()
     context = {
         'custom_user': user_profile,
         'current_time': current_time,
     }
-    if request.method == 'POST':
+
+    if request.method == 'POST' and 'endShift' not in request.POST:
         last_order.order_start_time = timezone.now()
         last_order.save()
         return redirect('shift_scan')
+    elif request.method == 'POST' and 'endShift' in request.POST:
+        last_shift.shift_end_time = timezone.now()
+        num_orders = StatOrdersModel.objects.filter().count()
+        last_shift.save()
+
+        return redirect('main')
+
     return render(request, 'include/shift_first_page.html', context)
 
 
@@ -112,7 +136,6 @@ def shift_part_qaun(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
     if request.method == 'POST':
-
         last_order.num_parts = selected_value
         last_order.order_start_working_time = timezone.now()
         last_order.save()
@@ -127,6 +150,7 @@ def shift_setup(request):
     context = {
         'custom_user': user_profile,
     }
+
     if request.method == 'POST':
         last_order.order_machine_start_time = timezone.now()
         last_order.save()
@@ -137,6 +161,7 @@ def shift_setup(request):
 def shift_processing(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+
     if request.method == 'POST':
         last_order.order_machine_end_time = timezone.now()
         last_order.save()
@@ -144,21 +169,10 @@ def shift_processing(request):
     return render(request, 'include/shift_processing.html')
 
 
-def count_bugs_duration(last_order):
-    """
-    count bugs duration in last order
-    return: timedelta
-    """
-    total_bugs = StatBugsModel.objects.filter(order=last_order).filter(is_solved=True)
-    total_duration = timedelta()
-    for bug in total_bugs:
-        one_bug_duration = bug.bug_end_time - bug.bug_start_time
-        total_duration += one_bug_duration
-    return total_duration
-
 def shift_ending(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+
     if request.method == 'POST':
         last_order.order_end_working_time = timezone.now()
         last_order.save()
@@ -176,6 +190,7 @@ def error_report(request):
         'custom_user': user_profile,
         'users_reports': user_reports
     }
+
     if request.method == 'POST':
         new_bug = StatBugsModel(
             user=CustomUserModel.objects.get(user=request.user),
