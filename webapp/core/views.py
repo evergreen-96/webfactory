@@ -7,7 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from pyzbar.pyzbar import decode
 
 from core.decorators import check_prev_page
-from core.models import CustomUserModel, StatDataModel
+from core.models import CustomUserModel, StatDataModel, StatBugsModel, \
+    StatOrdersModel
 
 
 def decode_photo(request):
@@ -113,8 +114,17 @@ def shift_ending(request):
 
 def error_report(request):
     user = CustomUserModel.objects.get(user=request.user)
+    users_bugs = StatBugsModel.objects.filter(user=user)
     context = {
         'custom_user': user,
+        'users_reports': users_bugs
     }
-    print(request.POST)
+    if request.method == 'POST':
+        new_bug = StatBugsModel(
+            user=CustomUserModel.objects.get(user=request.user),
+            order=StatOrdersModel.objects.last(),  # ИЗМЕНИТЬ НА НОРМАЛЬНЫЙ!
+            bug_description=request.POST.get('bug_description'),
+            bug_end_time=None
+        )
+        new_bug.save()
     return render(request, 'include/error_report.html', context)

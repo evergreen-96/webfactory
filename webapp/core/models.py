@@ -68,7 +68,7 @@ class StatBugsModel(models.Model):
     order = models.ForeignKey(StatOrdersModel, on_delete=models.DO_NOTHING,
                               null=True, blank=True)
     bug_description = models.CharField(max_length=1028)
-    bug_start_time = models.DateTimeField(blank=True, null=True)
+    bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
 
 # TODO:
