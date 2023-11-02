@@ -51,6 +51,7 @@ def decode_photo(request):
 def main_page(request):
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
+    request.session['visit'] = 0
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
     context = {
@@ -71,38 +72,42 @@ def main_page(request):
             total_bugs_time=None,
         )
         shift.save()
-
-        order = StatOrdersModel(
-            user=user_profile,
-            stat_data = shift,
-            part_name='',
-            num_parts=0,
-            order_start_time=None,
-            order_scan_time=None,
-            order_start_working_time=None,
-            order_machine_start_time=None,
-            order_machine_end_time=None,
-            order_end_working_time=None,
-            order_bugs_time=None
-        )
-        order.save()
         return redirect('shift_main_page')
     return render(request, 'include/user_inf_start_shift.html', context)
 
 
 def shift_main_page(request):
-    request.session['parts_done'] = 0
+    # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = False
     user_profile = CustomUserModel.objects.get(user=request.user)
-    last_order = StatOrdersModel.objects.filter(user=user_profile).last()
     last_shift = StatDataModel.objects.filter(user=user_profile).last()
     current_time = timezone.now()
     context = {
         'custom_user': user_profile,
         'current_time': current_time,
     }
-
     if request.method == 'POST' and 'endShift' not in request.POST:
+
+        user_profile = CustomUserModel.objects.get(user=request.user)
+        shift = StatDataModel.objects.filter(user=user_profile).last()
+
+        if shift.shift_end_time is None:
+            last_order = StatOrdersModel(
+                user=user_profile,
+                stat_data=shift,
+                part_name='',
+                num_parts=0,
+                order_start_time=None,
+                order_scan_time=None,
+                order_start_working_time=None,
+                order_machine_start_time=None,
+                order_machine_end_time=None,
+                order_end_working_time=None,
+                order_bugs_time=None
+            )
+            last_order.save()
+        else:
+            last_order = StatOrdersModel.objects.filter(user=user_profile).last()
         last_order.order_start_time = timezone.now()
         last_order.save()
         return redirect('shift_scan')
