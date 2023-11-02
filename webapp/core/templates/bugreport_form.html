@@ -1,29 +1,29 @@
-<div class="modal fade" id="bugReportModal" tabindex="-1" role="dialog"
+<!-- Модальное окно для отчета о проблеме -->
+<div class="modal fade" id="bugReportModal" tabindex="-1"
      aria-labelledby="bugReportModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="bugReportModalLabel">Сообщить о
                     проблеме</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Закрыть">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Закрыть"></button>
             </div>
             <div class="modal-body">
                 <form action="" method="post" id="reportForm">
                     {% csrf_token %}
-                    <div class="form-group">
-                        <label for="bugDescription">Описание проблемы</label>
+                    <div class="mb-3">
+                        <label for="bugDescription" class="form-label">Описание
+                            проблемы</label>
                         <textarea class="form-control" id="bugDescription"
                                   name="bug_description" rows="4"
                                   required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary"
-                            id="justReportButton">Сообщить о
-                        проблеме
+                    <button type="submit" class="btn btn-primary w-100"
+                            id="justReportButton">Сообщить о проблеме
                     </button>
-                    <button type="submit" class="btn btn-danger"
+                    <br><br>
+                    <button type="submit" class="btn btn-danger w-100"
                             id="stopWorkButton">Сообщить о проблеме и
                         приостановить работу
                     </button>
@@ -33,21 +33,16 @@
     </div>
 </div>
 
-<button id="reportBtn" type="button" class="btn btn-success w-100">Ошибка!
-</button>
-
-
-<div class="modal fade" id="successModal" tabindex="-1" role="dialog"
+<!-- Модальное окно для успешной отправки -->
+<div class="modal fade" id="successModal" tabindex="-1"
      aria-labelledby="successModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="successModalLabel">Успешно
                     отправлено</h5>
-                <button type="button" class="close" data-dismiss="modal"
-                        aria-label="Закрыть">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Закрыть"></button>
             </div>
             <div class="modal-body">
                 Ваш отчет был успешно отправлен.
@@ -55,6 +50,11 @@
         </div>
     </div>
 </div>
+
+<!-- Кнопка для вызова модального окна -->
+<br>
+<button id="reportBtn" type="button" class="btn btn-warning w-100">Ошибка!
+</button>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -67,6 +67,10 @@
         document.getElementById('justReportButton').addEventListener('click', function () {
             event.preventDefault();
             var formData = new FormData(document.getElementById('reportForm'));
+            if (formData.get('bug_description').trim() === '') {
+                alert('Введите описание проблемы');
+                return;
+            }
             var url = '/report/';  // URL для обработки формы на сервере
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
@@ -77,6 +81,9 @@
                     // Вывести уведомление о успешной отправке
                     var successModal = new bootstrap.Modal(document.getElementById('successModal'));
                     successModal.show();
+                    setTimeout(function () {
+                        successModal.hide();
+                    }, 1500)
                 }
             };
             xhr.send(formData);
@@ -85,11 +92,26 @@
         document.getElementById('stopWorkButton').addEventListener('click', function () {
             event.preventDefault();
             var formData = new FormData(document.getElementById('reportForm'));
+            if (formData.get('bug_description').trim() === '') {
+                alert('Введите описание проблемы');
+                return;
+            }
             var url = '/report/';  // URL для обработки формы на сервере
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    errorModal.hide();  // Скрыть модальное окно после успешной отправки
+
+                    // Вывести уведомление о успешной отправке
+                    var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    setTimeout(function () {
+                        successModal.hide();
+                    }, 1500)
+                }
+            };
             xhr.send(formData);
-            console.log('отправлено и остановлена работа');
         });
     });
 </script>
