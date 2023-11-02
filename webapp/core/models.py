@@ -37,7 +37,6 @@ class CustomUserModel(models.Model):
                                      on_delete=models.DO_NOTHING)
 
 
-
 class StatDataModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
     shift_start_time = models.DateTimeField(auto_now_add=True)
@@ -71,4 +70,3 @@ class StatBugsModel(models.Model):
     bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False, editable=False)
-    # TODO: Добавить пункт Solved=bool()

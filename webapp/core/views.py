@@ -32,34 +32,42 @@ def decode_photo(request):
 
 @login_required
 def main_page(request):
-
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
+
+    user_profile = CustomUserModel.objects.get(user=request.user)
+    last_shift = StatDataModel.objects.filter(user=user_profile).last()
     context = {
-        'custom_user': CustomUserModel.objects.get(user=request.user),
+        'custom_user': user_profile,
         'current_time': timezone.now(),
     }
     if request.method == 'POST':
-        shift_start_time = timezone.now()
-        shift_end_time = None
-        num_ended_orders = 0
-        shift_time_total = None
-        good_time = None
-        bad_time = None
-        lost_time = None
-        total_bugs_time = None
         shift = StatDataModel(
-            user=CustomUserModel.objects.get(user=request.user),
-            shift_start_time=shift_start_time,
-            shift_end_time=shift_end_time,
-            num_ended_orders=num_ended_orders,
-            shift_time_total=shift_time_total,
-            good_time=good_time,
-            bad_time=bad_time,
-            lost_time=lost_time,
-            total_bugs_time=total_bugs_time,
+            user=user_profile,
+            shift_start_time=timezone.now(),
+            shift_end_time=None,
+            num_ended_orders=0,
+            shift_time_total=None,
+            good_time=None,
+            bad_time=None,
+            lost_time=None,
+            total_bugs_time=None,
         )
-        # shift.save()
+        shift.save()
+
+        order = StatOrdersModel(
+            user=user_profile,
+            part_name='',
+            num_parts=0,
+            order_start_time=None,
+            order_scan_time=None,
+            order_start_working_time=None,
+            order_machine_start_time=None,
+            order_machine_end_time=None,
+            order_end_working_time=None,
+            order_bugs_time=None
+        )
+        order.save()
         return redirect('shift_main_page')
     return render(request, 'include/user_inf_start_shift.html', context)
 
@@ -67,6 +75,7 @@ def main_page(request):
 @check_prev_page
 def shift_main_page(request):
     request.session['prev_page'] = False
+
     custom_user = CustomUserModel.objects.get(user=request.user)
     current_time = timezone.now()
     context = {
