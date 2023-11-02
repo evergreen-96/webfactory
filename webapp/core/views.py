@@ -49,6 +49,9 @@ def decode_photo(request):
 
 @login_required
 def main_page(request):
+    """
+    Заглавная страница сайта
+    """
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
     request.session['visit'] = 0
@@ -77,20 +80,21 @@ def main_page(request):
 
 
 def shift_main_page(request):
+    """
+    Страница начала смены
+    (можно начать новую деталь или закончить смену)
+    """
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = False
     user_profile = CustomUserModel.objects.get(user=request.user)
-    last_shift = StatDataModel.objects.filter(user=user_profile).last()
+    shift = StatDataModel.objects.filter(user=user_profile).last()
     current_time = timezone.now()
     context = {
         'custom_user': user_profile,
         'current_time': current_time,
     }
     if request.method == 'POST' and 'endShift' not in request.POST:
-
-        user_profile = CustomUserModel.objects.get(user=request.user)
-        shift = StatDataModel.objects.filter(user=user_profile).last()
-
+        # проверка, если смена не закончилась, то создаем новый заказ, иначе изменяем
         if shift.shift_end_time is None:
             last_order = StatOrdersModel(
                 user=user_profile,
@@ -108,14 +112,15 @@ def shift_main_page(request):
             last_order.save()
         else:
             last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+
         last_order.order_start_time = timezone.now()
         last_order.save()
         return redirect('shift_scan')
     elif request.method == 'POST' and 'endShift' in request.POST:
-        last_shift.shift_end_time = timezone.now()
-        num_orders = StatOrdersModel.objects.filter().count()
-        last_shift.save()
-
+        shift.shift_end_time = timezone.now()
+        num_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
+        shift.num_ended_orders = num_orders
+        shift.save()
         return redirect('main')
 
     return render(request, 'include/shift_first_page.html', context)
@@ -123,6 +128,9 @@ def shift_main_page(request):
 
 @csrf_exempt
 def shift_scan(request):
+    """
+    Страница сканирование QR
+    """
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
     if request.method == 'POST':
@@ -135,6 +143,7 @@ def shift_scan(request):
 
 
 def shift_part_qaun(request):
+    """Страница выбора количества деталей"""
     selected_value = request.POST.get('quantity', '')
     button_value = request.POST.get('button', '')
     selected_button = selected_value if selected_value else button_value
