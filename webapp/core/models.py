@@ -70,6 +70,5 @@ class StatBugsModel(models.Model):
     bug_description = models.CharField(max_length=1028)
     bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
-
-# TODO:
-# разделить Работяг на подкатегории + разделение работяга/админ
+    is_solved = models.BooleanField(default=False, editable=False)
+    # TODO: Добавить пункт Solved=bool()
