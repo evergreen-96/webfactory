@@ -3,7 +3,8 @@ from types import NoneType
 
 from PIL import Image
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum
+from django.db import models
+from django.db.models import Sum, ExpressionWrapper, F, fields
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -72,17 +73,33 @@ def create_or_get_last_order(user_profile, shift):
     last_order.save()
     return last_order
 
-def end_shift(shift):
-    shift.shift_end_time = timezone.now()
-    # Считаем количество заказов
-    num_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
-    shift.num_ended_orders = num_orders
-    # Считаем время багов
-    total_bugs_time = shift.stat_orders.aggregate(
-        total_bugs_time=Sum('order_bugs_time')
-    ).get('total_bugs_time')
 
-    shift.total_bugs_time = total_bugs_time
+def end_shift(shift):
+    # Устанавливаем shift_end_time
+    shift.shift_end_time = timezone.now()
+
+    # Считаем количество заказов
+    shift.num_ended_orders = StatOrdersModel.objects.filter(stat_data=shift).count()
+
+    # Считаем общее время смены
+    shift.shift_time_total = shift.shift_end_time - shift.shift_start_time
+
+    # Считаем время багов
+    total_bugs_time = StatOrdersModel.objects.filter(stat_data=shift).aggregate(
+        total_bugs_time=Sum('order_bugs_time')
+    )['total_bugs_time']
+    shift.total_bugs_time = total_bugs_time or timedelta()
+
+    # Считаем полезное время (good_time)
+    duration_expression = ExpressionWrapper(
+        F('order_machine_end_time') - F('order_machine_start_time'),
+        output_field=fields.DurationField()
+    )
+    total_good_time = StatOrdersModel.objects.filter(stat_data=shift).annotate(
+        good_time=Sum(duration_expression, output_field=fields.DurationField())
+    ).aggregate(total_good_time=Sum('good_time'))['total_good_time']
+    shift.good_time = total_good_time or timedelta()
+
     shift.save()
 
 

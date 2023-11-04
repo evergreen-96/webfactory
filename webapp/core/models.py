@@ -42,10 +42,10 @@ class StatDataModel(models.Model):
     shift_start_time = models.DateTimeField(auto_now_add=True)
     shift_end_time = models.DateTimeField(blank=True, null=True)
     num_ended_orders = models.PositiveIntegerField(default=0)
-    shift_time_total = models.TimeField(blank=True, null=True)
-    good_time = models.TimeField(blank=True, null=True)
-    bad_time = models.TimeField(blank=True, null=True)
-    lost_time = models.TimeField(blank=True, null=True)
+    shift_time_total = models.DurationField(blank=True, null=True)
+    good_time = models.DurationField(blank=True, null=True)
+    bad_time = models.DurationField(blank=True, null=True)
+    lost_time = models.DurationField(blank=True, null=True)
     total_bugs_time = models.DurationField(blank=True, null=True)
 
     def is_ended(self):
