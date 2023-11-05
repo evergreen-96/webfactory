@@ -1,4 +1,5 @@
 from datetime import timedelta
+from functools import reduce
 from types import NoneType
 
 from PIL import Image
@@ -13,7 +14,7 @@ from pyzbar.pyzbar import decode
 
 from core.decorators import check_prev_page
 from core.models import CustomUserModel, StatDataModel, StatBugsModel, \
-    StatOrdersModel
+    StatOrdersModel, PositionsModel
 
 
 def count_bugs_duration(last_order):
@@ -100,6 +101,34 @@ def end_shift(shift):
     ).aggregate(total_good_time=Sum('good_time'))['total_good_time']
     shift.good_time = total_good_time or timedelta()
 
+    # Считаем бесполнезное время (bad_time)
+    total_bad_time = timedelta()
+
+    for order in StatOrdersModel.objects.filter(stat_data=shift):
+        bad_time_in_order = (
+                order.order_end_working_time - order.order_scan_time -
+                (order.order_machine_end_time - order.order_machine_start_time) +
+                order.order_bugs_time
+        )
+        total_bad_time += bad_time_in_order
+
+    shift.bad_time = total_bad_time
+    shift.save()
+    # Считаем время рассоса (lost_time)
+    chill_time = PositionsModel.objects.get(position_name=shift.user.position).chill_time
+    chill_time_parts = chill_time.split(':')
+    chill_timedelta = timedelta(
+        hours=int(chill_time_parts[0]),
+        minutes=int(chill_time_parts[1]),
+        seconds=int(chill_time_parts[2])
+    )
+    total_lost_time = (
+            shift.shift_time_total -
+            shift.good_time - shift.bad_time -
+            shift.total_bugs_time - chill_timedelta
+    )
+
+    shift.lost_time = total_lost_time
     shift.save()
 
 

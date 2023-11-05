@@ -22,7 +22,7 @@ class WorkingAreaModel(models.Model):
 
 class PositionsModel(models.Model):
     position_name = models.CharField(max_length=128)
-    chill_time = models.CharField(max_length=128)
+    chill_time = models.DurationField(max_length=128)
 
     def __str__(self):
         return self.position_name
