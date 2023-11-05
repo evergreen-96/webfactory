@@ -1,27 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
+    <div class="container-md">
         <div class="row">
             <div class="col-md-6">
                 <form id="scanForm" method="post" action="{% url 'shift_scan' %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="imageFile" class="form-label">Выберите изображение</label>
+                        <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для автоматического распознавания артикула</label>
                         <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
                                class="form-control">
                     </div>
-                    <button name="action" value="scan" class="btn btn-secondary btn-lg">Сканировать</button>
+                    <button name="action" value="scan" class="btn btn-secondary w-100">Сканировать</button>
                 </form>
             </div>
+            <br>
+            <br>
+
             <div class="col-md-6">
                 <form id="uploadForm" method="post">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="partname" class="form-label">Введите название</label>
+                        Или
+                        <br>
+                        <label for="partname" class="form-label">введите название вручную</label>
                         <input type="text" name="partname" id="partname" value="" class="form-control">
                     </div>
-                    <button type="submit" class="btn btn-success btn-lg">Отправить</button>
+                    <button type="submit" class="btn btn-success w-100">Отправить</button>
                 </form>
             </div>
         </div>

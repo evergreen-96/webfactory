@@ -1,20 +1,19 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Добро пожаловать, {{ custom_user }}!</h1>
-    <p>Должность: {{ custom_user.position }}</p>
-    <p>Рабочая зона: {{ custom_user.working_area }}</p>
-    <p>Роль: {{ custom_user.role }}</p>
-    <p>Текущее время: {{ current_time|date:"Y-m-d H:i:s" }}</p>
+    <div class="container-md">
+        <form method="post">
+            {% csrf_token %}
+            <button id="start-button" class="btn btn-primary btn-block w-100">Начать новую деталь</button>
+        </form>
+    </div>
 
-    <form method="post">
-        {% csrf_token %}
-        <button id="post-button" class="btn btn-primary ">Начать новую деталь</button>
-    </form>
 
-    <form method="post">
-        {% csrf_token %}
-        <button name="endShift" id="post-button" class="btn btn-primary ">Закончить смену</button>
-    </form>
+    <div class="container-md mt-2">
+        <form method="post">
+            {% csrf_token %}
+            <button name="endShift" id="end-button" class="btn btn-danger btn-block w-100">Закончить смену</button>
+        </form>
+    </div>
 
 {% endblock %}

@@ -31,15 +31,15 @@ class PositionsModel(models.Model):
 class CustomUserModel(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=64, unique=True)
-    role = models.ForeignKey(RoleModel, on_delete=models.DO_NOTHING)
-    position = models.ForeignKey(PositionsModel, on_delete=models.DO_NOTHING)
+    role = models.ForeignKey(RoleModel, on_delete=models.CASCADE)
+    position = models.ForeignKey(PositionsModel, on_delete=models.CASCADE)
     working_area = models.ForeignKey(WorkingAreaModel,
-                                     on_delete=models.DO_NOTHING)
+                                     on_delete=models.CASCADE)
 
 
 class StatDataModel(models.Model):
-    user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
-    shift_start_time = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
+    shift_start_time = models.DateTimeField(auto_now_add=True, editable=True)
     shift_end_time = models.DateTimeField(blank=True, null=True)
     num_ended_orders = models.PositiveIntegerField(default=0)
     shift_time_total = models.DurationField(blank=True, null=True)
@@ -52,7 +52,7 @@ class StatDataModel(models.Model):
         return self.shift_end_time is not None
 
 class StatOrdersModel(models.Model):
-    user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
     stat_data = models.ForeignKey(StatDataModel, related_name='stat_orders', on_delete=models.CASCADE)
     part_name = models.CharField(max_length=256)
     num_parts = models.PositiveIntegerField()
@@ -70,8 +70,8 @@ class StatOrdersModel(models.Model):
 
 
 class StatBugsModel(models.Model):
-    user = models.ForeignKey(CustomUserModel, on_delete=models.DO_NOTHING)
-    order = models.ForeignKey(StatOrdersModel, on_delete=models.DO_NOTHING,
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
+    order = models.ForeignKey(StatOrdersModel, on_delete=models.CASCADE,
                               null=True, blank=True)
     bug_description = models.CharField(max_length=1028)
     bug_start_time = models.DateTimeField(auto_now_add=True)

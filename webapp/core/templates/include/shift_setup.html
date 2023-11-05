@@ -20,13 +20,13 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
-                        <p class="card-text">{{ request.session.partname }} в
-                            количестве {{ request.session.quantity }}</p>
+                        <p class="card-text">{{ last_order.part_name }} в
+                            количестве {{ last_order.num_parts }}</p>
                     </div>
                 </div>
                 <form method="post">
                     {% csrf_token %}
-                    <button class="btn btn-primary mt-3">Продолжить</button>
+                    <button class="btn btn-primary mt-3 w-100">Продолжить</button>
                 </form>
             </div>
         </div>

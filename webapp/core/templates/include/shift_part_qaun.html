@@ -2,9 +2,10 @@
 
 {% block content %}
 
-    <h1 class="text-center mb-5">Название детали: {{ request.session.partname }}</h1>
+    <h1 class="text-center mb-5">Название детали: {{ last_order.part_name }}</h1>
     <div class="container">
         <h1 class="mt-5">Введите количество деталей:</h1>
+
         <form method="post" action="">
             {% csrf_token %}
             <div class="form-group">
@@ -13,23 +14,23 @@
                        placeholder="Введите значение" inputmode="numeric">
             </div>
 
-            <div class="mt-4">
-                <div class="btn-group-vertical d-grid gap-2" role="group"
-                     aria-label="Кнопки">
-                    <button type="button" class="btn btn-primary btn-lg"
-                            onclick="updateValue('1')">1
-                    </button>
-                    <button type="button" class="btn btn-primary btn-lg"
-                            onclick="updateValue('2')">2
-                    </button>
-                    <button type="button" class="btn btn-primary btn-lg"
-                            onclick="updateValue('3')">3
-                    </button>
-                    <button type="button" class="btn btn-primary btn-lg"
-                            onclick="updateValue('4')">4
-                    </button>
-                </div>
+            <br>
+            <div class="btn-group d-grid gap-2" role="group"
+                 aria-label="Кнопки">
+                <button type="button" class="btn btn-primary btn-lg w-100"
+                        onclick="updateValue('1')">1
+                </button>
+                <button type="button" class="btn btn-primary btn-lg w-100"
+                        onclick="updateValue('2')">2
+                </button>
+                <button type="button" class="btn btn-primary btn-lg w-100"
+                        onclick="updateValue('3')">3
+                </button>
+                <button type="button" class="btn btn-primary btn-lg w-100"
+                        onclick="updateValue('4')">4
+                </button>
             </div>
+
 
             <!-- Добавляем скрытое поле для передачи значения кнопки -->
             <input type="hidden" id="button" name="button" value="">
@@ -72,21 +73,23 @@
 
         // Функция, вызываемая при нажатии на кнопку "Отправить"
         document.getElementById('sendBtn').addEventListener('click', function () {
-            var quantity = document.getElementById('quantity').value.trim();
-            if (quantity === '') {
-                alert('Поле не может быть пустым!');
-                event.preventDefault();
-            } else {
-                {#Вариант с модалкой, второй вариант с системными#}
-                document.getElementById('selected_value_confirmation').innerText = quantity;
+                var quantity = document.getElementById('quantity').value.trim();
+                if (quantity === '') {
+                    alert('Поле не может быть пустым!');
+                    event.preventDefault();
+                } else {
+                    {#Вариант с модалкой, второй вариант с системными#}
+                    document.getElementById('selected_value_confirmation').innerText = quantity;
 
-                var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
-                confirmationModal.show();
-                {#    if (confirm('OK??') === true) {#}
-            {#        console.log('TRUE');#}
-            {#        document.querySelector('form').submit();#}
-            {#    }#}
-            {# }} #} }}
+                    var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+                    confirmationModal.show();
+                    {#    if (confirm('OK??') === true) {#}
+                    {#        console.log('TRUE');#}
+                    {#        document.querySelector('form').submit();#}
+                    {#    }#}
+                    {# }} #}
+                }
+            }
         )
 
 

@@ -20,8 +20,8 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
-                        <p class="card-text">{{ request.session.partname }} в
-                            количестве {{ request.session.quantity }}</p>
+                        <p class="card-text">{{ last_order.part_name }} в
+                            количестве {{ last_order.num_parts }}</p>
                         <p class="card-text">Нажмите "Продолжить" после
                             окончания обработки детали станком</p>
                     </div>
