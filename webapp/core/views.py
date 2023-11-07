@@ -16,7 +16,6 @@ def main_page(request):
     request.session['visit'] = 0
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
-
     context = {
         'custom_user': user_profile,
         'current_time': timezone.now(),
@@ -94,6 +93,12 @@ def shift_part_qaun(request):
     selected_button = selected_value if selected_value else button_value
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+    context = {
+        'custom_user': user_profile,
+        'current_time': timezone.now(),
+        'last_order': last_order,
+        'selected_value': selected_button
+    }
     if request.method == 'POST':
         last_order.num_parts = selected_value
         last_order.order_start_working_time = timezone.now()
@@ -101,7 +106,7 @@ def shift_part_qaun(request):
 
         return redirect('shift_setup')
     return render(request, 'include/shift_part_qaun.html',
-                  {'selected_value': selected_button})
+                  context)
 
 
 def shift_setup(request):

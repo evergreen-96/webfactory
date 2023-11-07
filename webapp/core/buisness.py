@@ -41,6 +41,7 @@ def decode_photo(request):
 
 
 def create_or_get_last_order(user_profile, shift):
+    print(type(shift.shift_end_time))
     # Проверка, если смена не закончилась, то создаем новый заказ, иначе получаем последний
     if shift.shift_end_time is None:
         last_order = StatOrdersModel(
@@ -133,16 +134,17 @@ def calculate_lost_time(shift):
     Общее потерянное время (рассос)
     """
     chill_time = PositionsModel.objects.get(position_name=shift.user.position).chill_time
-    chill_time_parts = chill_time.split(':')
-    chill_timedelta = timedelta(
-        hours=int(chill_time_parts[0]),
-        minutes=int(chill_time_parts[1]),
-        seconds=int(chill_time_parts[2])
-    )
+    # chill_time_parts = chill_time.split(':')
+    # print(chill_time_parts)
+    # chill_timedelta = timedelta(
+    #     hours=int(chill_time_parts[0]),
+    #     minutes=int(chill_time_parts[1]),
+    #     seconds=int(chill_time_parts[2])
+    # )
     total_lost_time = (
         shift.shift_time_total -
         shift.good_time - shift.bad_time -
-        shift.total_bugs_time - chill_timedelta
+        shift.total_bugs_time - chill_time
     )
     shift.lost_time = total_lost_time
     return shift

@@ -2,26 +2,26 @@
 
 {% block content %}
 
-
-    <div class="row mt-4">
-        <div class="col-md-8">
-            <h1 class="display-5">Заключительные работы</h1>
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h3 class="card-title">Сейчас в работе:</h3>
-                    <p class="card-text">{{ last_order.part_name }} в
-                        количестве {{ last_order.num_parts }}</p>
-                    <p class="card-text">Нажмите "Завершить", если деталь на
-                        сталлаже готовой продукции</p>
+    <div class="container-md">
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h1 class="display-5">Заключительные работы</h1>
+                <div class="card mt-4">
+                    <div class="card-body">
+                        <h3 class="card-title">Сейчас в работе:</h3>
+                        <p class="card-text">{{ last_order.part_name }} в
+                            количестве {{ last_order.num_parts }}</p>
+                        <p class="card-text">Нажмите "Завершить", если деталь на
+                            сталлаже готовой продукции</p>
+                    </div>
                 </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <button name="orderEnded" type="submit" class="btn btn-primary mt-3 w-100">Завершить заказ</button>
+                </form>
             </div>
-            <form method="post">
-                {% csrf_token %}
-                <button name="orderEnded" type="submit" class="btn btn-primary mt-3">Завершить заказ</button>
-            </form>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

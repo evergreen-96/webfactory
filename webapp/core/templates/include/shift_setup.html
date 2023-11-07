@@ -1,19 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-12">
-                <h1 class="display-4">Добро
-                    пожаловать, {{ custom_user.user.username }}!</h1>
-                <p class="lead">Должность: {{ custom_user.position }}</p>
-                <p class="lead">Рабочая зона: {{ custom_user.working_area }}</p>
-                <p class="lead">Роль: {{ custom_user.role }}</p>
-                <p class="lead">Текущее время:
-                    {{ current_time|date:"Y-m-d H:i:s" }}</p>
-            </div>
-        </div>
 
+<div class="container-md">
         <div class="row mt-4">
             <div class="col-md-12">
                 <h1 class="display-5">Подготовка и наладка</h1>
@@ -30,5 +19,5 @@
                 </form>
             </div>
         </div>
-    </div>
+</div>
 {% endblock %}
