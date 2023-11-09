@@ -2,6 +2,7 @@ from types import NoneType
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
@@ -43,13 +44,11 @@ def main_page(request):
             'custom_user': user_profile,
             'current_time': timezone.now(),
         }
-        print(context.values())
     except:
         context = {
             'custom_user': None,
             'current_time': timezone.now(),
         }
-        print(context.values())
 
     if request.method == 'POST' and last_order is not NoneType:
         shift = StatDataModel(
@@ -68,6 +67,7 @@ def main_page(request):
     return render(request, 'include/user_inf_start_shift.html', context)
 
 
+@login_required(login_url='login')
 def shift_main_page(request):
     """
     Страница начала смены
@@ -93,6 +93,7 @@ def shift_main_page(request):
     return render(request, 'include/shift_first_page.html', context)
 
 
+@login_required(login_url='login')
 @csrf_exempt
 def shift_scan(request):
     """
@@ -114,6 +115,7 @@ def shift_scan(request):
     return render(request, 'include/shift_scan.html', context)
 
 
+@login_required(login_url='login')
 def shift_part_qaun(request):
     """
     Страница выбора количества деталей
@@ -139,6 +141,7 @@ def shift_part_qaun(request):
                   context)
 
 
+@login_required(login_url='login')
 def shift_setup(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
@@ -155,6 +158,7 @@ def shift_setup(request):
     return render(request, 'include/shift_setup.html', context)
 
 
+@login_required(login_url='login')
 def shift_processing(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
@@ -170,6 +174,7 @@ def shift_processing(request):
     return render(request, 'include/shift_processing.html', context)
 
 
+@login_required(login_url='login')
 def shift_ending(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
@@ -188,6 +193,7 @@ def shift_ending(request):
     return render(request, 'include/shift_ending.html', context)
 
 
+@login_required(login_url='login')
 def error_report(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
@@ -205,4 +211,5 @@ def error_report(request):
             bug_end_time=None
         )
         new_bug.save()
+
     return render(request, 'include/error_report.html', context)
