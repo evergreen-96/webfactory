@@ -19,6 +19,11 @@ services:
       - POSTGRES_USER=hello_django
       - POSTGRES_PASSWORD=hello_django
       - POSTGRES_DB=hello_django_dev
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
 
 
