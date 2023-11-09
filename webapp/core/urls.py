@@ -2,7 +2,8 @@ from django.urls import path
 
 from core.views import main_page, shift_main_page, \
     shift_scan, shift_part_qaun, \
-    shift_setup, decode_photo, error_report, shift_processing, shift_ending
+    shift_setup, decode_photo, error_report, shift_processing, shift_ending, \
+    login_view, logout_view
 
 urlpatterns = [
     path('', main_page, name='main'),
@@ -14,4 +15,6 @@ urlpatterns = [
     path('shift/setup/', shift_setup, name='shift_setup'),
     path('shift/processing/', shift_processing, name='shift_processing'),
     path('shift/ending/', shift_ending, name='shift_ending'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
 ]

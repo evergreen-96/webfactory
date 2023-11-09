@@ -1,11 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-md">
-    <form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-primary w-100">Начать смену</button>
-    </form>
-</div>
-
+    <div class="container-md">
+        {% if custom_user %}
+            <form method="post" class="mb-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-block w-100">
+                    Начать смену
+                </button>
+            </form>
+            <button class="btn btn-danger btn-block w-100"
+                    onclick="window.location.href='{% url 'logout' %}'">Выйти из
+                системы
+            </button>
+        {% else %}
+            <button class="btn btn-success btn-block w-100"
+                    onclick="window.location.href='{% url 'login' %}'">Войти в
+                систему
+            </button>
+        {% endif %}
+    </div>
 {% endblock %}

@@ -1,12 +1,34 @@
 from types import NoneType
-from django.contrib.auth.decorators import login_required
+
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
-from core.decorators import check_prev_page
-from core.models import CustomUserModel, StatDataModel
-from  core.buisness import *
 
-@login_required
+from core.buisness import *
+from core.models import CustomUserModel, StatDataModel
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('main')
+        else:
+            messages.error(request, 'Неверное имя пользователя или пароль.')
+
+    return render(request, 'include/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('main')
+
+
 def main_page(request):
     """
     Заглавная страница сайта
@@ -14,12 +36,20 @@ def main_page(request):
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
     request.session['visit'] = 0
-    user_profile = CustomUserModel.objects.get(user=request.user)
-    last_order = StatOrdersModel.objects.filter(user=user_profile).last()
-    context = {
-        'custom_user': user_profile,
-        'current_time': timezone.now(),
-    }
+    try:
+        user_profile = CustomUserModel.objects.filter(user=request.user).last()
+        last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+        context = {
+            'custom_user': user_profile,
+            'current_time': timezone.now(),
+        }
+        print(context.values())
+    except:
+        context = {
+            'custom_user': None,
+            'current_time': timezone.now(),
+        }
+        print(context.values())
 
     if request.method == 'POST' and last_order is not NoneType:
         shift = StatDataModel(
