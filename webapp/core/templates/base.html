@@ -9,6 +9,7 @@
     <title>WebFactory</title>
 </head>
 <body>
+{% if custom_user %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-md-8">
@@ -17,6 +18,13 @@
             <p class="lead">Рабочая зона: {{ custom_user.working_area }}</p>
             <p class="lead">Роль: {{ custom_user.role }}</p>
         </div>
+{% else %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-4">Выполните вход с систему</h1>
+        </div>
+{% endif %}
         <div class="col-md-4">
             <div class="sticky-top">
                 <h1 class="display-6">Информация</h1>

@@ -47,12 +47,17 @@ def main_page(request):
             'custom_user': user_profile,
             'current_time': timezone.now(),
         }
+        shift = StatDataModel.objects.filter(user=user_profile) \
+            .filter(shift_end_time__lt=timezone.now()).count()
     except:
         context = {
             'custom_user': None,
             'current_time': timezone.now(),
         }
-
+    #     проверка, чтобы не было более 2х смен за календарный день
+    if request.method == 'POST' and shift > 2:
+        return redirect('main')
+    # Создаем заготовку для смены
     if request.method == 'POST' and last_order is not NoneType:
         shift = StatDataModel(
             user=user_profile,
