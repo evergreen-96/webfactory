@@ -6,8 +6,6 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="bugReportModalLabel">Сообщить о
                     проблеме</h5>
-                <a href="{% url 'users_bugs' %}" class="btn btn-primary">Bugs
-                    Page</a>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                         aria-label="Закрыть"></button>
             </div>
@@ -56,8 +54,10 @@
 <!-- Кнопка для вызова модального окна -->
 <br>
 <div class="container-md">
-<button id="reportBtn" type="button" class="btn btn-warning w-100">Ошибка!
-</button>
+    <button id="reportBtn" type="button" class="btn btn-warning w-100">Ошибка!
+    </button>
+    <a href="{% url 'users_bugs' %}" class="btn btn-primary">Bugs
+        Page</a>
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
