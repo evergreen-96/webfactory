@@ -55,9 +55,10 @@ def main_page(request):
             'current_time': timezone.now(),
         }
     #     проверка, чтобы не было более 2х смен за календарный день
-    if request.method == 'POST' and shift > 2:
+    if request.method == 'POST' and shift >= 2:
+
         return redirect('main')
-    # Создаем заготовку для смены
+    # Создаем заготовку для заказа
     if request.method == 'POST' and last_order is not NoneType:
         shift = StatDataModel(
             user=user_profile,

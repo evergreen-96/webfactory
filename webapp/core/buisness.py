@@ -154,11 +154,15 @@ def end_shift(shift):
     """
     Завершение смены, посчет всего
     """
-    shift = calculate_shift_end_time(shift)
-    shift = count_num_ended_orders(shift)
-    shift = calculate_shift_time_total(shift)
-    shift = calculate_total_bugs_time(shift)
-    shift = calculate_good_time(shift)
-    shift = calculate_bad_time(shift)
-    shift = calculate_lost_time(shift)
-    shift.save()
+    try:
+        shift = calculate_shift_end_time(shift)
+        shift = count_num_ended_orders(shift)
+        shift = calculate_shift_time_total(shift)
+        shift = calculate_total_bugs_time(shift)
+        shift = calculate_good_time(shift)
+        shift = calculate_bad_time(shift)
+        shift = calculate_lost_time(shift)
+        shift.save()
+    except TypeError as e:
+        print(f'!!! - {e} !!!')
+        shift.delete()
