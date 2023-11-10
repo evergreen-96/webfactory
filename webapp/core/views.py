@@ -248,7 +248,6 @@ def backup(requests):
     filename = timezone.datetime.now().date()  # output filename here
     saveDir = open("./backups/{}.json".format(filename), 'w')
 
-    # change application_name with your django app which you want to get backup from it
     call_command('dumpdata', 'core', stdout=saveDir, indent=3)
     saveDir.close()
     return HttpResponse(saveDir.name)

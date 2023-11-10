@@ -7,7 +7,8 @@
                 <form id="scanForm" method="post" action="{% url 'shift_scan' %}">
                     {% csrf_token %}
                     <div class="mb-3">
-                        <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для автоматического распознавания артикула</label>
+                        <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
+                            автоматического распознавания артикула</label>
                         <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
                                class="form-control">
                     </div>
@@ -35,12 +36,15 @@
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function (event) {
-    var formData = document.getElementById('partname').value.trim();
-    if (formData === '') {
-        alert('Поле не может быть пустым!');
-        event.preventDefault(); // Эта строка предотвращает отправку формы
-    }
-});
+            var formData = document.getElementById('partname').value.trim();
+            if (formData === '') {
+                alert('Поле не может быть пустым!');
+                event.preventDefault(); // Эта строка предотвращает отправку формы
+            } else if (formData.length > 255) {
+                alert('Значение не может превышать 255 символов!');
+                event.preventDefault(); // Эта строка предотвращает отправку формы
+            }
+        });
 
         document.getElementById('scanForm').addEventListener('submit', function (event) {
             event.preventDefault();
@@ -65,4 +69,5 @@
             xhr.send(formData);
         });
     </script>
+{% include "bugreport_form.html" %}
 {% endblock %}

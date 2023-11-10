@@ -62,7 +62,7 @@
             </div>
         </div>
     </div>
-
+{% include "bugreport_form.html" %}
 
     <script>
         // Функция, вызываемая при нажатии на кнопку
@@ -74,21 +74,29 @@
         // Функция, вызываемая при нажатии на кнопку "Отправить"
         document.getElementById('sendBtn').addEventListener('click', function () {
                 var quantity = document.getElementById('quantity').value.trim();
+
+                // Добавляем проверку на максимальную длину (255 символов)
                 if (quantity === '') {
                     alert('Поле не может быть пустым!');
                     event.preventDefault();
+                } else if (quantity.length > 255) {
+                    alert('Значение не может превышать 255 символов!');
+                    event.preventDefault();
+                } else if (!/^\d+$/.test(quantity)) {
+                    // Проверка на наличие только цифр
+                    alert('Значение должно состоять только из цифр!');
+                    event.preventDefault();
                 } else {
-                    {#Вариант с модалкой, второй вариант с системными#}
+                    // Вариант с модалкой
                     document.getElementById('selected_value_confirmation').innerText = quantity;
-
                     var confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
                     confirmationModal.show();
-                    {#    if (confirm('OK??') === true) {#}
-                    {#        console.log('TRUE');#}
-                    {#        document.querySelector('form').submit();#}
-                    {#    }#}
-                    {# }} #}
                 }
+                {#    if (confirm('OK??') === true) {#}
+                {#        console.log('TRUE');#}
+                {#        document.querySelector('form').submit();#}
+                {#    }#}
+                {# }} #}
             }
         )
 

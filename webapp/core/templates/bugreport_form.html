@@ -56,9 +56,11 @@
 <div class="container-md">
     <button id="reportBtn" type="button" class="btn btn-warning w-100">Ошибка!
     </button>
-    <a href="{% url 'users_bugs' %}" class="btn btn-primary">Bugs
+    <a href="{% url 'users_bugs' %}" class="btn btn-outline-info w-100 mt-2">Bugs
         Page</a>
 </div>
+
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var errorModal = new bootstrap.Modal(document.getElementById('bugReportModal'));
