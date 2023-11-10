@@ -2,11 +2,14 @@ from types import NoneType
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.management import call_command
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from core.buisness import *
+from core.forms import BugEditForm
 from core.models import CustomUserModel, StatDataModel
 
 
@@ -213,3 +216,39 @@ def error_report(request):
         new_bug.save()
 
     return render(request, 'include/error_report.html', context)
+
+
+@login_required(login_url='login')
+def bug_list(request):
+    user = CustomUserModel.objects.get(user=request.user)
+    bugs = StatBugsModel.objects.filter(user=user)
+    form = BugEditForm()
+    context = {
+        'bugs': bugs,
+        'form': form,
+        'user_profile': user
+    }
+    if request.method == 'POST':
+        bug_id = request.POST.get('bug_id')
+        bug = get_object_or_404(StatBugsModel, pk=bug_id)
+        form = BugEditForm(request.POST, instance=bug)
+
+        if form.is_valid():
+            if form.cleaned_data['is_solved']:
+                bug.bug_end_time = timezone.now()
+            form.save()
+            return JsonResponse({'status': 'success'})
+
+    return render(request, 'include/bug_list.html', context)
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_superuser)
+def backup(requests):
+    filename = timezone.datetime.now().date()  # output filename here
+    saveDir = open("./backups/{}.json".format(filename), 'w')
+
+    # change application_name with your django app which you want to get backup from it
+    call_command('dumpdata', 'core', stdout=saveDir, indent=3)
+    saveDir.close()
+    return HttpResponse(saveDir.name)

@@ -37,6 +37,9 @@ class CustomUserModel(models.Model):
                                      on_delete=models.CASCADE)
 
 
+    def __str__(self):
+        return self.user.username
+
 class StatDataModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
     shift_start_time = models.DateTimeField(auto_now_add=True, editable=True)
@@ -47,6 +50,11 @@ class StatDataModel(models.Model):
     bad_time = models.DurationField(blank=True, null=True)
     lost_time = models.DurationField(blank=True, null=True)
     total_bugs_time = models.DurationField(blank=True, null=True)
+
+
+    def __str__(self):
+        return f'{self.shift_start_time} | {self.user}'
+
 
     def is_ended(self):
         return self.shift_end_time is not None
@@ -65,6 +73,11 @@ class StatOrdersModel(models.Model):
     order_bugs_time = models.DurationField(blank=True, null=True)
 
 
+    def __str__(self):
+        return f'{self.order_start_time} | {self.user} | ' \
+               f'{self.part_name} - {self.num_parts}'
+
+
     def is_ended(self):
         return self.order_end_working_time is not None
 
@@ -77,3 +90,10 @@ class StatBugsModel(models.Model):
     bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        is_solved = 'Открыт'
+        if self.is_solved:
+            is_solved = 'Закрыт'
+        return f'{self.bug_start_time.date()} | {self.bug_description} | {is_solved}'

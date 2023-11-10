@@ -1,6 +1,9 @@
 from django import forms
-from django.contrib.auth import get_user_model
-from models import *
 
-User = get_user_model()
+from .models import StatBugsModel
 
+
+class BugEditForm(forms.ModelForm):
+    class Meta:
+        model = StatBugsModel
+        fields = ['bug_description', 'is_solved', 'bug_end_time']

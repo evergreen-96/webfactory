@@ -1,9 +1,11 @@
 from datetime import timedelta
+
 from PIL import Image
 from django.db.models import Sum, ExpressionWrapper, F, fields
 from django.http import HttpResponse
 from django.utils import timezone
 from pyzbar.pyzbar import decode
+
 from core.models import StatBugsModel, StatOrdersModel, PositionsModel
 
 
@@ -41,7 +43,6 @@ def decode_photo(request):
 
 
 def create_or_get_last_order(user_profile, shift):
-    print(type(shift.shift_end_time))
     # Проверка, если смена не закончилась, то создаем новый заказ, иначе получаем последний
     if shift.shift_end_time is None:
         last_order = StatOrdersModel(
