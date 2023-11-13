@@ -71,6 +71,7 @@ class StatOrdersModel(models.Model):
     order_machine_end_time = models.DateTimeField(blank=True, null=True)
     order_end_working_time = models.DateTimeField(blank=True, null=True)
     order_bugs_time = models.DurationField(blank=True, null=True)
+    order_on_hold_time = models.DurationField(default='00:00:00')
 
 
     def __str__(self):
@@ -97,3 +98,18 @@ class StatBugsModel(models.Model):
         if self.is_solved:
             is_solved = 'Закрыт'
         return f'{self.bug_start_time.date()} | {self.bug_description} | {is_solved}'
+
+
+class UserRequestsModel(models.Model):
+    user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
+    report_description = models.CharField(max_length=1028)
+    report_start_time = models.DateTimeField(auto_now_add=True)
+    report_end_time = models.DateTimeField(blank=True, null=True)
+    is_solved = models.BooleanField(default=False)
+
+
+    def __str__(self):
+        is_solved = 'Открыт'
+        if self.is_solved:
+            is_solved = 'Закрыт'
+        return f'{self.report_start_time.date()} | {self.report_description} | {is_solved}'

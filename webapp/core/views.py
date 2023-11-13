@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from core.buisness import *
 from core.forms import BugEditForm
-from core.models import CustomUserModel, StatDataModel
+from core.models import CustomUserModel, StatDataModel, UserRequestsModel
 
 
 def login_view(request):
@@ -220,6 +220,25 @@ def error_report(request):
             bug_end_time=None
         )
         new_bug.save()
+
+    return render(request, 'include/error_report.html', context)
+
+
+@login_required(login_url='login')
+def user_request_view(request):
+    user_profile = CustomUserModel.objects.get(user=request.user)
+    user_requests = UserRequestsModel.objects.filter(user=user_profile).last()
+    context = {
+        'custom_user': user_profile,
+        'users_reports': user_requests
+    }
+
+    if request.method == 'POST':
+        new_request = UserRequestsModel(
+            user=CustomUserModel.objects.get(user=request.user),
+            report_description=request.POST.get('request_description'),
+        )
+        new_request.save()
 
     return render(request, 'include/error_report.html', context)
 
