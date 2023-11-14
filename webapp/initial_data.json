@@ -11,7 +11,8 @@
     "pk": 1,
     "fields": {
       "machine_type": 1,
-      "machine_name": "test_machine"
+      "machine_name": "test_machine",
+      "is_stucked": false
     }
   },
   {
