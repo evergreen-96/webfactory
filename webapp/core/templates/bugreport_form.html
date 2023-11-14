@@ -116,6 +116,10 @@
                 }
             };
             xhr.send(formData);
+            setTimeout(function () {
+                window.location.href = '/bug-list/';
+            }, 1000)
+
         });
 
         document.getElementById('sendRequestButton').addEventListener('click', function () {

@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from core.buisness import *
+from core.decorators import check_bug_solved
 from core.forms import BugEditForm
 from core.models import CustomUserModel, StatDataModel, UserRequestsModel
 
@@ -32,7 +33,7 @@ def logout_view(request):
     logout(request)
     return redirect('main')
 
-
+@check_bug_solved
 def main_page(request):
     """
     Заглавная страница сайта
@@ -75,7 +76,7 @@ def main_page(request):
         return redirect('shift_main_page')
     return render(request, 'include/user_inf_start_shift.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def shift_main_page(request):
     """
@@ -101,7 +102,7 @@ def shift_main_page(request):
 
     return render(request, 'include/shift_first_page.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 @csrf_exempt
 def shift_scan(request):
@@ -123,7 +124,7 @@ def shift_scan(request):
         return redirect('shift_part_qaun')
     return render(request, 'include/shift_scan.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def shift_part_qaun(request):
     """
@@ -149,7 +150,7 @@ def shift_part_qaun(request):
     return render(request, 'include/shift_part_qaun.html',
                   context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def shift_setup(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
@@ -166,7 +167,7 @@ def shift_setup(request):
         return redirect('shift_processing')
     return render(request, 'include/shift_setup.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def shift_processing(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
@@ -182,7 +183,7 @@ def shift_processing(request):
         return redirect('shift_ending')
     return render(request, 'include/shift_processing.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def shift_ending(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
@@ -201,12 +202,12 @@ def shift_ending(request):
         return redirect('shift_main_page')
     return render(request, 'include/shift_ending.html', context)
 
-
+@check_bug_solved
 @login_required(login_url='login')
 def error_report(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
     last_order = StatOrdersModel.objects.filter(user=user_profile).last()
-    user_reports = StatBugsModel.objects.filter(user=user_profile).last()
+    user_reports = StatBugsModel.objects.filter(user=user_profile)
     context = {
         'custom_user': user_profile,
         'users_reports': user_reports
