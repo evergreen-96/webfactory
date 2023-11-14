@@ -42,11 +42,12 @@ def decode_photo(request):
     return HttpResponse(decoded_qr_data)
 
 
-def create_or_get_last_order(user_profile, shift):
+def create_or_get_last_order(user_profile, shift, selected_machine):
     # Проверка, если смена не закончилась, то создаем новый заказ, иначе получаем последний
     if shift.shift_end_time is None:
         last_order = StatOrdersModel(
             user=user_profile,
+            machine = selected_machine,
             stat_data=shift,
             part_name='',
             num_parts=0,

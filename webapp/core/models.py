@@ -15,6 +15,7 @@ class MachineTypesModel(models.Model):
 class MachineModel(models.Model):
     machine_type = models.ForeignKey(MachineTypesModel, on_delete=models.CASCADE)
     machine_name = models.CharField(max_length=512)
+    is_stucked = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.machine_name} | Тип: {self.machine_type}'
@@ -38,7 +39,7 @@ class WorkingAreaModel(models.Model):
 class PositionsModel(models.Model):
     position_name = models.CharField(max_length=128)
     chill_time = models.DurationField(max_length=128)
-    machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE)
+    machine = models.ManyToManyField(MachineModel, blank=True)
 
     def __str__(self):
         return self.position_name
@@ -76,8 +77,10 @@ class StatDataModel(models.Model):
     def is_ended(self):
         return self.shift_end_time is not None
 
+
 class StatOrdersModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
+    machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE, blank=True, null=True)
     stat_data = models.ForeignKey(StatDataModel, related_name='stat_orders', on_delete=models.CASCADE)
     part_name = models.CharField(max_length=256)
     num_parts = models.PositiveIntegerField()
@@ -89,6 +92,10 @@ class StatOrdersModel(models.Model):
     order_end_working_time = models.DateTimeField(blank=True, null=True)
     order_bugs_time = models.DurationField(blank=True, null=True)
     order_on_hold_time = models.DurationField(default='00:00:00')
+
+    def get_available_machines(self):
+        position = self.user.position.machine
+        print(position)
 
 
     def __str__(self):

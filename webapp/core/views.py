@@ -38,6 +38,7 @@ def main_page(request):
     """
     Заглавная страница сайта
     """
+
     # устанавливает сессию, чтобы нельзя было войти на страницу
     request.session['prev_page'] = True
     request.session['visit'] = 0
@@ -86,15 +87,19 @@ def shift_main_page(request):
     request.session['prev_page'] = False
     user_profile = CustomUserModel.objects.get(user=request.user)
     shift = StatDataModel.objects.filter(user=user_profile).last()
+    users_machines = user_profile.position.machine.all()
     current_time = timezone.now()
     context = {
         'custom_user': user_profile,
+        'users_machines': users_machines,
         'current_time': current_time,
     }
 
     if request.method == 'POST':
+        selected_machine_id = request.POST.get('selected_machine')
+        selected_machine = users_machines.get(pk=selected_machine_id)
         if 'endShift' not in request.POST:
-            last_order = create_or_get_last_order(user_profile, shift)
+            create_or_get_last_order(user_profile, shift, selected_machine)
             return redirect('shift_scan')
         elif 'endShift' in request.POST:
             end_shift(shift)
