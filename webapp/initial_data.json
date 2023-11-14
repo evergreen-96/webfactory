@@ -1,5 +1,20 @@
 [
   {
+    "model": "core.machinetypesmodel",
+    "pk": 1,
+    "fields": {
+      "machine_type": "test_machine_type"
+    }
+  },
+  {
+    "model": "core.machinemodel",
+    "pk": 1,
+    "fields": {
+      "machine_type": 1,
+      "machine_name": "test_machine"
+    }
+  },
+  {
     "model": "core.rolemodel",
     "pk": 1,
     "fields": {
@@ -11,7 +26,8 @@
     "pk": 1,
     "fields": {
       "position_name": "test_position",
-      "chill_time": "00:00:05"
+      "chill_time": "00:00:05",
+      "machine": 1
     }
   },
   {

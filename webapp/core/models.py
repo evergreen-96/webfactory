@@ -5,6 +5,21 @@ from django.db import models
 User = get_user_model()
 
 
+class MachineTypesModel(models.Model):
+    machine_type = models.CharField(max_length=512)
+
+    def __str__(self):
+        return self.machine_type
+
+
+class MachineModel(models.Model):
+    machine_type = models.ForeignKey(MachineTypesModel, on_delete=models.CASCADE)
+    machine_name = models.CharField(max_length=512)
+
+    def __str__(self):
+        return f'{self.machine_name} | Тип: {self.machine_type}'
+
+
 class RoleModel(models.Model):
     role_name = models.CharField(
         choices=[('worker', 'worker'), ('admin', 'admin')], max_length=64)
@@ -23,6 +38,7 @@ class WorkingAreaModel(models.Model):
 class PositionsModel(models.Model):
     position_name = models.CharField(max_length=128)
     chill_time = models.DurationField(max_length=128)
+    machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.position_name
@@ -113,3 +129,5 @@ class UserRequestsModel(models.Model):
         if self.is_solved:
             is_solved = 'Закрыт'
         return f'{self.report_start_time.date()} | {self.report_description} | {is_solved}'
+
+
