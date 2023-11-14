@@ -24,7 +24,6 @@ def check_prev_page(view_func):
 
 def check_bug_solved(view_func):
     def wrapper(request, *args, **kwargs):
-        request.session['redirect_from'] = request.get_full_path()
         try:
             user_profile = CustomUserModel.objects.get(user=request.user)
             unsolved_bugs = StatBugsModel.objects.filter(user=user_profile, is_solved=False)

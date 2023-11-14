@@ -56,6 +56,7 @@ class CustomUserModel(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class StatDataModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
     shift_start_time = models.DateTimeField(auto_now_add=True, editable=True)
@@ -107,6 +108,7 @@ class StatBugsModel(models.Model):
     bug_start_time = models.DateTimeField(auto_now_add=True)
     bug_end_time = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
+    url = models.CharField(max_length=128)
 
 
     def __str__(self):

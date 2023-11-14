@@ -218,8 +218,10 @@ def error_report(request):
             user=CustomUserModel.objects.get(user=request.user),
             order=last_order,
             bug_description=request.POST.get('bug_description'),
-            bug_end_time=None
+            bug_end_time=None,
+            url=request.META.get('HTTP_REFERER', '/'),
         )
+
         new_bug.save()
     return render(request, 'include/error_report.html', context)
 
@@ -247,13 +249,12 @@ def user_request_view(request):
 def bug_list(request):
     user = CustomUserModel.objects.get(user=request.user)
     bugs = StatBugsModel.objects.filter(user=user)
-    priv_page = request.session['redirect_from']
     form = BugEditForm()
     context = {
         'bugs': bugs,
         'form': form,
         'user_profile': user,
-        'priv_page': priv_page
+        'prev_page': bugs.last().url
     }
     if request.method == 'POST':
         bug_id = request.POST.get('bug_id')
