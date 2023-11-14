@@ -250,11 +250,12 @@ def bug_list(request):
     user = CustomUserModel.objects.get(user=request.user)
     bugs = StatBugsModel.objects.filter(user=user)
     form = BugEditForm()
+    last_bug_url = bugs.last().url if bugs.last() else '/'
     context = {
         'bugs': bugs,
         'form': form,
         'user_profile': user,
-        'prev_page': bugs.last().url
+        'prev_page': last_bug_url
     }
     if request.method == 'POST':
         bug_id = request.POST.get('bug_id')
