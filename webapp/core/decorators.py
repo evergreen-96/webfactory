@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
-
+from django.shortcuts import redirect
 from core.models import CustomUserModel, StatBugsModel
 
 
@@ -13,8 +13,6 @@ def logout_required(function=None, logout_url='logout_redirect'):
         return actual_decorator(function)
     return actual_decorator
 
-from django.shortcuts import redirect
-
 
 def check_prev_page(view_func):
     def wrapped(request, *args, **kwargs):
@@ -26,12 +24,11 @@ def check_prev_page(view_func):
 
 def check_bug_solved(view_func):
     def wrapper(request, *args, **kwargs):
+        request.session['redirect_from'] = request.get_full_path()
         user_profile = CustomUserModel.objects.get(user=request.user)
         unsolved_bugs = StatBugsModel.objects.filter(user=user_profile, is_solved=False)
         if unsolved_bugs.exists():
-            return redirect('users_bugs')  # Замените 'main' на ваш реальный URL
-
+            return redirect('users_bugs')
         # Нет нерешенных багов, продолжаем выполнение оригинального представления
         return view_func(request, *args, **kwargs)
-
     return wrapper

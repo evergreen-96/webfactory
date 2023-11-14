@@ -202,7 +202,7 @@ def shift_ending(request):
         return redirect('shift_main_page')
     return render(request, 'include/shift_ending.html', context)
 
-@check_bug_solved
+
 @login_required(login_url='login')
 def error_report(request):
     user_profile = CustomUserModel.objects.get(user=request.user)
@@ -221,7 +221,6 @@ def error_report(request):
             bug_end_time=None
         )
         new_bug.save()
-
     return render(request, 'include/error_report.html', context)
 
 
@@ -248,11 +247,13 @@ def user_request_view(request):
 def bug_list(request):
     user = CustomUserModel.objects.get(user=request.user)
     bugs = StatBugsModel.objects.filter(user=user)
+    priv_page = request.session['redirect_from']
     form = BugEditForm()
     context = {
         'bugs': bugs,
         'form': form,
-        'user_profile': user
+        'user_profile': user,
+        'priv_page': priv_page
     }
     if request.method == 'POST':
         bug_id = request.POST.get('bug_id')
