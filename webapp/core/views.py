@@ -96,8 +96,11 @@ def shift_main_page(request):
     }
 
     if request.method == 'POST':
-        selected_machine_id = request.POST.get('selected_machine')
-        selected_machine = users_machines.get(pk=selected_machine_id)
+        try:
+            selected_machine_id = request.POST.get('selected_machine')
+            selected_machine = users_machines.get(pk=selected_machine_id)
+        except:
+            pass
         if 'endShift' not in request.POST:
             create_or_get_last_order(user_profile, shift, selected_machine)
             return redirect('shift_scan')
