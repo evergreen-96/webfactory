@@ -15,6 +15,15 @@ from core.models import CustomUserModel, StatDataModel, UserRequestsModel
 
 
 def login_view(request):
+    """
+       Handles the login functionality.
+       Parameters:
+           request (HttpRequest): The HTTP request object.
+       Returns:
+           HttpResponse: The HTTP response object.
+       Description:
+           This function handles the login functionality. It checks if the request method is POST, retrieves the username and password from the request, authenticates the user, and if the authentication is successful, logs in the user and redirects them to the 'main' page. If the authentication fails, it displays an error message. If the request method is not POST, it renders the 'login.html' template.
+       """
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -30,6 +39,13 @@ def login_view(request):
 
 
 def logout_view(request):
+    """
+    Logs out the user by invalidating the current session and redirecting to the 'main' page.
+    :param request: The HTTP request object.
+    :type request: HttpRequest
+    :return: A redirect response to the 'main' page.
+    :rtype: HttpResponseRedirect
+    """
     logout(request)
     return redirect('main')
 
