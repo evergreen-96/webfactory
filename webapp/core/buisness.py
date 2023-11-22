@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from pyzbar.pyzbar import decode
 
-from core.models import StatBugsModel, StatOrdersModel, PositionsModel
+from core.models import ReportsModel, OrdersModel, PositionsModel
 
 
 def count_bugs_duration(last_order):
@@ -14,12 +14,12 @@ def count_bugs_duration(last_order):
     count bugs duration in last order
     return: timedelta
     """
-    total_bugs = StatBugsModel.objects.filter(order=last_order).filter(
+    total_bugs = ReportsModel.objects.filter(order=last_order).filter(
         is_solved=True)
     total_duration = timedelta()
 
     for bug in total_bugs:
-        one_bug_duration = bug.bug_end_time - bug.bug_start_time
+        one_bug_duration = bug.end_time - bug.start_time
         total_duration += one_bug_duration
     return total_duration
 
@@ -46,7 +46,7 @@ def decode_photo(request):
 def create_or_get_last_order(user_profile, shift, selected_machine):
     # Проверка, если смена не закончилась, то создаем новый заказ, иначе получаем последний
     if shift.shift_end_time is None:
-        last_order = StatOrdersModel(
+        last_order = OrdersModel(
             user=user_profile,
             machine=selected_machine,
             stat_data=shift,
@@ -62,9 +62,9 @@ def create_or_get_last_order(user_profile, shift, selected_machine):
         )
         last_order.save()
     else:
-        last_order = StatOrdersModel.objects.filter(user=user_profile).last()
+        last_order = OrdersModel.objects.filter(user=user_profile).last()
 
-    last_order.order_start_time = timezone.now()
+    last_order.start_time = timezone.now()
     last_order.save()
     return last_order
 
@@ -81,7 +81,7 @@ def count_num_ended_orders(shift):
     """
     Количество завершенных заказов
     """
-    shift.num_ended_orders = StatOrdersModel.objects.filter(
+    shift.num_ended_orders = OrdersModel.objects.filter(
         stat_data=shift).count()
     return shift
 
@@ -90,7 +90,7 @@ def calculate_shift_time_total(shift):
     """
     Общее время смены
     """
-    shift.shift_time_total = shift.shift_end_time - shift.shift_start_time
+    shift.time_total = shift.shift_end_time - shift.start_time
     return shift
 
 
@@ -98,8 +98,8 @@ def calculate_total_bugs_time(shift):
     """
     Общее время багов для каждого заказа внутри смены
     """
-    total_bugs_time = StatOrdersModel.objects.filter(stat_data=shift).aggregate(
-        total_bugs_time=Sum('order_bugs_time')
+    total_bugs_time = OrdersModel.objects.filter(stat_data=shift).aggregate(
+        total_bugs_time=Sum('bugs_time')
     )['total_bugs_time']
     shift.total_bugs_time = total_bugs_time or timedelta()
     return shift
@@ -110,10 +110,10 @@ def calculate_good_time(shift):
     Общее полезное время
     """
     duration_expression = ExpressionWrapper(
-        F('order_machine_end_time') - F('order_machine_start_time'),
+        F('machine_end_time') - F('machine_start_time'),
         output_field=fields.DurationField()
     )
-    total_good_time = StatOrdersModel.objects.filter(stat_data=shift).annotate(
+    total_good_time = OrdersModel.objects.filter(stat_data=shift).annotate(
         good_time=Sum(duration_expression, output_field=fields.DurationField())
     ).aggregate(total_good_time=Sum('good_time'))['total_good_time']
     shift.good_time = total_good_time or timedelta()
@@ -126,12 +126,12 @@ def calculate_bad_time(shift):
     """
     total_bad_time = timedelta()
 
-    for order in StatOrdersModel.objects.filter(stat_data=shift):
+    for order in OrdersModel.objects.filter(stat_data=shift):
         bad_time_in_order = (
-                order.order_end_working_time - order.order_scan_time -
+                order.end_working_time - order.scan_time -
                 (
-                        order.order_machine_end_time - order.order_machine_start_time) -
-                order.order_bugs_time
+                        order.machine_end_time - order.machine_start_time) -
+                order.bugs_time
         )
         total_bad_time += bad_time_in_order
 
@@ -146,7 +146,7 @@ def calculate_lost_time(shift):
     chill_time = PositionsModel.objects.get(
         position_name=shift.user.position).chill_time
     total_lost_time = (
-            shift.shift_time_total -
+            shift.time_total -
             shift.good_time - shift.bad_time -
             shift.total_bugs_time - chill_time
     )

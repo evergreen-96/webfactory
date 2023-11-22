@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" name="start_shift">Start shift</button>
+        <button type="submit" name="logout">logout</button>
+    </form>
+{% endblock %}

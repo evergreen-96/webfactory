@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import redirect
-from core.models import CustomUserModel, StatBugsModel
+from core.models import CustomUserModel, ReportsModel
 
 
 def logout_required(function=None, logout_url='logout_redirect'):
@@ -26,7 +26,7 @@ def check_bug_solved(view_func):
     def wrapper(request, *args, **kwargs):
         try:
             user_profile = CustomUserModel.objects.get(user=request.user)
-            unsolved_bugs = StatBugsModel.objects.filter(user=user_profile, is_solved=False)
+            unsolved_bugs = ReportsModel.objects.filter(user=user_profile, is_solved=False)
             if unsolved_bugs.exists():
                 return redirect('users_bugs')
         except TypeError:

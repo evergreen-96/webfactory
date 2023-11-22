@@ -15,7 +15,8 @@ class MachineTypesModel(models.Model):
 class MachineModel(models.Model):
     machine_type = models.ForeignKey(MachineTypesModel, on_delete=models.CASCADE)
     machine_name = models.CharField(max_length=512)
-    is_stucked = models.BooleanField(default=False)
+    is_broken = models.BooleanField(default=False)
+    is_in_progress = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.machine_name} | Тип: {self.machine_type}'
@@ -39,7 +40,6 @@ class WorkingAreaModel(models.Model):
 class PositionsModel(models.Model):
     position_name = models.CharField(max_length=128)
     chill_time = models.DurationField(max_length=128)
-    machine = models.ManyToManyField(MachineModel, blank=True)
 
     def __str__(self):
         return self.position_name
@@ -52,18 +52,19 @@ class CustomUserModel(models.Model):
     position = models.ForeignKey(PositionsModel, on_delete=models.CASCADE)
     working_area = models.ForeignKey(WorkingAreaModel,
                                      on_delete=models.CASCADE)
+    machine = models.ManyToManyField(MachineModel, blank=True)
 
 
     def __str__(self):
         return self.user.username
 
 
-class StatDataModel(models.Model):
+class ShiftModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
-    shift_start_time = models.DateTimeField(auto_now_add=True, editable=True)
-    shift_end_time = models.DateTimeField(blank=True, null=True)
+    start_time = models.DateTimeField(auto_now_add=True, editable=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     num_ended_orders = models.PositiveIntegerField(default=0)
-    shift_time_total = models.DurationField(blank=True, null=True)
+    time_total = models.DurationField(blank=True, null=True)
     good_time = models.DurationField(blank=True, null=True)
     bad_time = models.DurationField(blank=True, null=True)
     lost_time = models.DurationField(blank=True, null=True)
@@ -71,27 +72,27 @@ class StatDataModel(models.Model):
 
 
     def __str__(self):
-        return f'{self.shift_start_time} | {self.user}'
+        return f'{self.start_time} | {self.user}'
 
 
     def is_ended(self):
         return self.shift_end_time is not None
 
 
-class StatOrdersModel(models.Model):
+class OrdersModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
     machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE, blank=True, null=True)
-    stat_data = models.ForeignKey(StatDataModel, related_name='stat_orders', on_delete=models.CASCADE)
+    related_to_shift = models.ForeignKey(ShiftModel, related_name='stat_orders', on_delete=models.CASCADE)
     part_name = models.CharField(max_length=256)
     num_parts = models.PositiveIntegerField()
-    order_start_time = models.DateTimeField(blank=True, null=True)
-    order_scan_time = models.DateTimeField(blank=True, null=True)
-    order_start_working_time = models.DateTimeField(blank=True, null=True)
-    order_machine_start_time = models.DateTimeField(blank=True, null=True)
-    order_machine_end_time = models.DateTimeField(blank=True, null=True)
-    order_end_working_time = models.DateTimeField(blank=True, null=True)
-    order_bugs_time = models.DurationField(blank=True, null=True)
-    order_on_hold_time = models.DurationField(default='00:00:00')
+    start_time = models.DateTimeField(blank=True, null=True)
+    scan_time = models.DateTimeField(blank=True, null=True)
+    start_working_time = models.DateTimeField(blank=True, null=True)
+    machine_start_time = models.DateTimeField(blank=True, null=True)
+    machine_end_time = models.DateTimeField(blank=True, null=True)
+    end_working_time = models.DateTimeField(blank=True, null=True)
+    bugs_time = models.DurationField(blank=True, null=True)
+    on_hold_time = models.DurationField(default='00:00:00')
 
     def get_available_machines(self):
         position = self.user.position.machine
@@ -99,21 +100,21 @@ class StatOrdersModel(models.Model):
 
 
     def __str__(self):
-        return f'{self.order_start_time} | {self.user} | ' \
+        return f'{self.start_time} | {self.user} | ' \
                f'{self.part_name} - {self.num_parts}'
 
 
     def is_ended(self):
-        return self.order_end_working_time is not None
+        return self.end_working_time is not None
 
 
-class StatBugsModel(models.Model):
+class ReportsModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
-    order = models.ForeignKey(StatOrdersModel, on_delete=models.CASCADE,
+    order = models.ForeignKey(OrdersModel, on_delete=models.CASCADE,
                               null=True, blank=True)
-    bug_description = models.CharField(max_length=1028)
-    bug_start_time = models.DateTimeField(auto_now_add=True)
-    bug_end_time = models.DateTimeField(blank=True, null=True)
+    description = models.CharField(max_length=1028)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
     url = models.CharField(max_length=128)
 
@@ -122,7 +123,7 @@ class StatBugsModel(models.Model):
         is_solved = 'Открыт'
         if self.is_solved:
             is_solved = 'Закрыт'
-        return f'{self.bug_start_time.date()} | {self.bug_description} | {is_solved}'
+        return f'{self.start_time.date()} | {self.description} | {is_solved}'
 
 
 class UserRequestsModel(models.Model):

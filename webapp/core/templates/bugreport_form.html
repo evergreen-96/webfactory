@@ -90,7 +90,7 @@
         document.getElementById('stopWorkButton').addEventListener('click', function () {
             event.preventDefault();
             var formData = new FormData(document.getElementById('reportForm'));
-            if (formData.get('bug_description').trim() === '') {
+            if (formData.get('description').trim() === '') {
                 alert('Введите описание проблемы');
                 return;
             }

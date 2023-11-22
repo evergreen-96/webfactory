@@ -1,9 +1,9 @@
 from django import forms
 
-from .models import StatBugsModel
+from .models import ReportsModel
 
 
 class BugEditForm(forms.ModelForm):
     class Meta:
-        model = StatBugsModel
-        fields = ['bug_description', 'is_solved', 'bug_end_time']
+        model = ReportsModel
+        fields = ['description', 'is_solved', 'end_time']

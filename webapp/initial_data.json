@@ -12,7 +12,8 @@
     "fields": {
       "machine_type": 1,
       "machine_name": "test_machine",
-      "is_stucked": false
+      "is_broken": false,
+      "is_in_progress": false
     }
   },
   {
@@ -27,8 +28,7 @@
     "pk": 1,
     "fields": {
       "position_name": "test_position",
-      "chill_time": "00:00:05",
-      "machine": [1]
+      "chill_time": "00:00:05"
     }
   },
   {
@@ -46,7 +46,8 @@
       "position": 1,
       "role": 1,
       "user": 1,
-      "working_area": 1
+      "working_area": 1,
+      "machine": [1]
     }
   }
 ]
