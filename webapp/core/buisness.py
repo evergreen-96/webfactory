@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from pyzbar.pyzbar import decode
 
-from core.models import ReportsModel, OrdersModel, ShiftModel, MachineModel
+from core.models import ReportsModel, OrdersModel, ShiftModel, MachineModel, UserRequestsModel
 
 
 def get_last_or_create_shift(custom_user):
@@ -96,9 +96,15 @@ def add_end_working_time(order):
     return order
 
 
-def machine_free(order):
+def machine_free(order, status='in_progress'):
     machine = MachineModel.objects.get(id=order.machine_id)
-    machine.is_in_progress = False
+    if status == 'in_progress':
+        machine.is_in_progress = False
+    elif status == 'broken':
+        machine.is_broken = False
+    elif status =='both':
+        machine.is_broken = False
+        machine.is_in_progress = False
     machine.save()
     return order
 
@@ -124,6 +130,10 @@ def add_report(request, order, custom_user):
         start_time=timezone.now(),
         url=request.META.get('HTTP_REFERER', '/')
     )
+    machine_id = order.machine.id
+    machine = MachineModel.objects.get(id=machine_id)
+    machine.is_broken = True
+    machine.save()
 
 
 def get_all_reports(user):
@@ -131,11 +141,14 @@ def get_all_reports(user):
     return all_reports
 
 
-def change_report(report_id, is_solved):
-    report = ReportsModel.objects.get(id=report_id)
-    report.is_solved = bool(is_solved)
-    report.save()
-    return {'status': 'success'}
+
+def add_request(request, custom_user):
+    UserRequestsModel.objects.create(
+        user=custom_user,
+        start_time=timezone.now(),
+        description=request.POST.get('request_description')
+    )
+
 
 
 ######################################################

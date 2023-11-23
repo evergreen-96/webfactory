@@ -1,39 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <div class="container-md mt-2">
-        <a href="{{ prev_page }}" class="btn btn-outline-info w-100 mt-2">Return</a>
+        <div class="container-md mt-2">
+        <a href="{% url 'shift_main_page' %}" class="btn btn-outline-info w-100 mt-2">Return</a>
     </div>
-    <div class="container mt-4">
-        {% for bug in bugs %}
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        {{ bug.bug_description }}
-                        <button class="btn btn-primary btn-sm ml-3 edit-bug-btn"
-                                data-bug-id="{{ bug.id }}">Edit Bug
-                        </button>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <p class="card-text">User: {{ bug.user }}</p>
-                    <p class="card-text">Order: {{ bug.order }}</p>
-                    <p class="card-text">Start Time: {{ bug.bug_start_time }}</p>
-                    <p class="card-text">End Time: {{ bug.bug_end_time }}</p>
-                    <p class="card-text">Is Solved: {{ bug.is_solved }}</p>
-                </div>
-                <div class="card-footer edit-form" id="edit-form-{{ bug.id }}"
-                     style="display: none;">
-                    <form method="post" class="bug-edit-form">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-success">Save</button>
-                    </form>
-                </div>
+    {% for report in user_reports %}
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    {{ report.bug_description }}
+                    <button class="btn btn-primary btn-sm ml-3 edit-bug-btn"
+                            data-bug-id="{{ report.id }}">Edit Bug
+                    </button>
+                </h5>
             </div>
-        {% endfor %}
-
+            <div class="card-body">
+                <p class="card-text">User: {{ report.user }}</p>
+                <p class="card-text">Order: {{ report.order }}</p>
+                <p class="card-text">Start
+                    Time: {{ report.start_time }}</p>
+                <p class="card-text">End Time: {{ report.end_time }}</p>
+                <p class="card-text">Is Solved: {{ report.is_solved }}</p>
+            </div>
+            <div class="card-footer edit-form" id="edit-form-{{ report.id }}"
+                 style="display: none;">
+                <form method="post" class="bug-edit-form">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="report_description">Report Description</label>
+                        <input type="text" class="form-control"
+                               id="report_description" name="report_description"
+                               value="{{ report.description }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="is_solved">Is Solved</label>
+                        <input type="checkbox" class="form-check-input"
+                               id="is_solved" name="is_solved"
+                               {% if report.is_solved %}checked{% endif %}>
+                    </div>
+                    <input type="hidden" name="bug_id" value="{{ report.id }}">
+                    <button type="submit" class="btn btn-success">Save
+                    </button>
+                </form>
+            </div>
+        </div>
+    {% endfor %}
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
@@ -55,18 +66,18 @@
                 var formData = $(this).serialize();
                 $.ajax({
                     type: 'POST',
-                    url: window.location.href,
+                    url: '/reports/',
                     data: formData,
                     success: function (data) {
                         if (data.status === 'success') {
                             alert('Bug successfully updated!');
-                            // Additional actions upon successful update
+                            window.location.replace("/reports/");
                         } else {
-                            alert('Error updating bug. Details: ' + data.error_message);
+                            alert('Error updating bug.');
                         }
                     },
-                    error: function (xhr, textStatus, errorThrown) {
-                        alert('An error occurred while updating the bug. Details: ' + errorThrown);
+                    error: function () {
+                        alert('An error occurred while updating the bug.');
                     }
                 });
             });

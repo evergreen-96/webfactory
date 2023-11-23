@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.db.models.expressions import NoneType
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 
 from core.buisness import *
+from core.forms import ReportEditForm
 from core.models import CustomUserModel
 
 
@@ -81,8 +84,11 @@ def shift_main_view(request):
         request.session['selected_machine_id'] = selected_machine_id
         if 'continue' in request.POST:
             order = get_order(custom_user, shift, selected_machine_id)
+            url = order.hold_url
+            if type(url) is NoneType:
+                url = ReportsModel.objects.filter(order__machine_id=selected_machine_id).last().url
             remove_hold(order)
-            return redirect(order.hold_url)
+            return redirect(url)
         if 'start_new' in request.POST:
             start_new_order(custom_user, shift, selected_machine_id)
             return redirect('shift_scan_page')
@@ -171,13 +177,40 @@ def report_send(request):
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     if request.method == 'POST':
         add_report(request, order, custom_user)
+        return HttpResponse('Report sent successfully')
+    else:
+        return HttpResponse('Bad request')
 
 
-def reports_view(request, report_id=None):
-    return render(request, 'include/reports_page.html', context)
+def reports_view(request):
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    user_reports = ReportsModel.objects.filter(user=custom_user).order_by('-start_time')
+    form = ReportEditForm()
 
-
-def request_view(request):
+    context = {
+        'user_reports': user_reports,
+        'form': form,
+        'custom_user': custom_user
+    }
+    # POST to solve report and set is_broken False
     if request.method == 'POST':
-        print(request.POST)
-    return render(request, 'bugreport_form.html')
+        report_id = request.POST.get('bug_id')
+        report = get_object_or_404(ReportsModel, pk=report_id)
+        form = ReportEditForm(request.POST, instance=report)
+        if form.is_valid():
+            if form.cleaned_data['is_solved']:
+                report.end_time = timezone.now()
+            form.save()
+            machine_free(report.order, status='broken')
+            return JsonResponse({'status': 'success'})
+    return render(request, 'include/reports_page.html' , context)
+
+
+def request_send(request):
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    if request.method == 'POST':
+        pass
+        add_request(request, custom_user)
+        return HttpResponse('Request sent successfully')
+    else:
+        return HttpResponse('Bad request')

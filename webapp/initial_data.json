@@ -16,6 +16,16 @@
       "is_in_progress": false
     }
   },
+    {
+    "model": "core.machinemodel",
+    "pk": 2,
+    "fields": {
+      "machine_type": 1,
+      "machine_name": "test_machine2",
+      "is_broken": false,
+      "is_in_progress": false
+    }
+  },
   {
     "model": "core.rolemodel",
     "pk": 1,
@@ -47,7 +57,7 @@
       "role": 1,
       "user": 1,
       "working_area": 1,
-      "machine": [1]
+      "machine": [1, 2]
     }
   }
 ]

@@ -127,9 +127,9 @@ class ReportsModel(models.Model):
 
 class UserRequestsModel(models.Model):
     user = models.ForeignKey(CustomUserModel, on_delete=models.CASCADE)
-    report_description = models.CharField(max_length=1028)
-    report_start_time = models.DateTimeField(auto_now_add=True)
-    report_end_time = models.DateTimeField(blank=True, null=True)
+    description = models.CharField(max_length=1028)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(blank=True, null=True)
     is_solved = models.BooleanField(default=False)
 
 
@@ -137,6 +137,6 @@ class UserRequestsModel(models.Model):
         is_solved = 'Открыт'
         if self.is_solved:
             is_solved = 'Закрыт'
-        return f'{self.report_start_time.date()} | {self.report_description} | {is_solved}'
+        return f'{self.start_time.date()} | {self.description} | {is_solved}'
 
 
