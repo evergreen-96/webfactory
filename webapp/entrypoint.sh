@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$DATABASE" = "postgres" ]; then
     echo "Waiting for postgres..."
@@ -8,7 +8,6 @@ if [ "$DATABASE" = "postgres" ]; then
     done
 
     echo "PostgreSQL started"
-
 fi
 
 python manage.py flush --no-input

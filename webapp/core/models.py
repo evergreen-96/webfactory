@@ -19,7 +19,7 @@ class MachineModel(models.Model):
     is_in_progress = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.machine_name} | Тип: {self.machine_type}'
+        return f'{self.machine_name} | Тип: {self.machine_type} | Сломан: {self.is_broken} | В процессе: {self.is_in_progress}'
 
 
 class RoleModel(models.Model):
@@ -76,7 +76,7 @@ class ShiftModel(models.Model):
 
 
     def is_ended(self):
-        return self.shift_end_time is not None
+        return self.end_time is not None
 
 
 class OrdersModel(models.Model):
@@ -84,7 +84,7 @@ class OrdersModel(models.Model):
     machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE, blank=True, null=True)
     related_to_shift = models.ForeignKey(ShiftModel, related_name='stat_orders', on_delete=models.CASCADE)
     part_name = models.CharField(max_length=256)
-    num_parts = models.PositiveIntegerField()
+    num_parts = models.PositiveIntegerField(default=0)
     start_time = models.DateTimeField(blank=True, null=True)
     scan_time = models.DateTimeField(blank=True, null=True)
     start_working_time = models.DateTimeField(blank=True, null=True)
@@ -92,15 +92,14 @@ class OrdersModel(models.Model):
     machine_end_time = models.DateTimeField(blank=True, null=True)
     end_working_time = models.DateTimeField(blank=True, null=True)
     bugs_time = models.DurationField(blank=True, null=True)
-    on_hold_time = models.DurationField(default='00:00:00')
-
-    def get_available_machines(self):
-        position = self.user.position.machine
-        print(position)
+    ended_early = models.BooleanField(default=False)
+    hold_started = models.DateTimeField(blank=True, null=True)
+    hold_url = models.CharField(max_length=256, blank=True, null=True)
+    hold_ended = models.DateTimeField(blank=True, null=True)
 
 
     def __str__(self):
-        return f'{self.start_time} | {self.user} | ' \
+        return f'{self.id} | {self.user} | ' \
                f'{self.part_name} - {self.num_parts}'
 
 

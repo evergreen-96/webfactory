@@ -1,6 +1,6 @@
-from django.conf import settings
 from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import redirect
+
 from core.models import CustomUserModel, ReportsModel
 
 
@@ -28,7 +28,7 @@ def check_bug_solved(view_func):
             user_profile = CustomUserModel.objects.get(user=request.user)
             unsolved_bugs = ReportsModel.objects.filter(user=user_profile, is_solved=False)
             if unsolved_bugs.exists():
-                return redirect('users_bugs')
+                return redirect('reports')
         except TypeError:
             return view_func(request, *args, **kwargs)
             # Нет нерешенных багов, продолжаем выполнение оригинального представления
