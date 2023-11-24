@@ -1,7 +1,7 @@
 from django.urls import path
 
-from core.views import decode_photo, pre_shift_view, login_view, logout_view, shift_main_view, shift_scan_view, \
-    shift_qauntity_view, shift_setup_view, shift_processing_view, shift_ending_view, report_send, reports_view, \
+from core.views import decode_photo, pre_shift_view, login_view, logout_view, shift_main_view, order_scan_view, \
+    order_qauntity_view, order_setup_view, order_processing_view, order_ending_view, report_send, reports_view, \
     request_send
 
 urlpatterns = [
@@ -11,11 +11,11 @@ urlpatterns = [
     path('reports/', reports_view, name='reports_view'),
     path('request/', request_send, name='request_send'),
     path('qr-decoder/', decode_photo, name='decode_photo'),
-    path('shift/scan/', shift_scan_view, name='shift_scan_page'),
-    path('shift/quantity/', shift_qauntity_view, name='shift_qauntity_page'),
-    path('shift/setup/', shift_setup_view, name='shift_setup_page'),
-    path('shift/processing/', shift_processing_view, name='shift_processing_page'),
-    path('shift/ending/', shift_ending_view, name='shift_ending_page'),
+    path('shift/scan/', order_scan_view, name='shift_scan_page'),
+    path('shift/quantity/', order_qauntity_view, name='shift_qauntity_page'),
+    path('shift/setup/', order_setup_view, name='shift_setup_page'),
+    path('shift/processing/', order_processing_view, name='shift_processing_page'),
+    path('shift/ending/', order_ending_view, name='shift_ending_page'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     # path('backup/', backup, name='backup'),

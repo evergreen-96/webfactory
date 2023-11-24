@@ -97,12 +97,12 @@ def shift_main_view(request):
             stop_order(order)
             return redirect('shift_main_page')
         if 'end_shift' in request.POST:
-            # TODO: add buisness logic!
+            count_and_end_shift(shift)
             return redirect('shift_main_page')
     return render(request, 'include/shift/main_page.html', context)
 
 
-def shift_scan_view(request):
+def order_scan_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
@@ -113,7 +113,7 @@ def shift_scan_view(request):
     return render(request, 'include/shift/scan_name_page.html')
 
 
-def shift_qauntity_view(request):
+def order_qauntity_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
@@ -130,7 +130,7 @@ def shift_qauntity_view(request):
     return render(request, 'include/shift/quantity_page.html')
 
 
-def shift_setup_view(request):
+def order_setup_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
@@ -144,7 +144,7 @@ def shift_setup_view(request):
     return render(request, 'include/shift/setup_page.html')
 
 
-def shift_processing_view(request):
+def order_processing_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
@@ -157,7 +157,7 @@ def shift_processing_view(request):
     return render(request, 'include/shift/processing_page.html')
 
 
-def shift_ending_view(request):
+def order_ending_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
@@ -167,6 +167,7 @@ def shift_ending_view(request):
             return redirect('shift_main_page')
         add_end_working_time(order)
         machine_free(order)
+        count_and_set_reports_duration(order)
         return redirect('shift_main_page')
     return render(request, 'include/shift/ending_order_page.html')
 
