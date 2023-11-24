@@ -3,51 +3,51 @@
 {% block content %}
     <div class="container-md">
         <div class="row">
+            <!-- QR Code Scan Form -->
             <div class="col-md-6">
-                <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}">
+                <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
-                            автоматического распознавания артикула</label>
+                    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
+                        автоматического распознавания артикула</label>
+                    <div class="input-group mb-3">
                         <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
                                class="form-control">
+                        <button name="action" value="scan" class="btn btn-secondary" type="submit">Сканировать</button>
                     </div>
-                    <button name="action" value="scan" class="btn btn-secondary w-100">Сканировать</button>
                 </form>
             </div>
-            <br>
-            <br>
 
+            <!-- Manual Entry Form -->
             <div class="col-md-6">
                 <form id="uploadForm" method="post">
                     {% csrf_token %}
-                    <div class="mb-3">
-                        Или
-                        <br>
-                        <label for="partname" class="form-label">введите название вручную</label>
+                    <p class="lead mb-3">Или введите название вручную</p>
+                    <div class="input-group mb-3">
                         <input type="text" name="partname" id="partname" value="" class="form-control">
+                        <button type="submit" class="btn btn-success">Продолжить</button>
                     </div>
-                    <button type="submit" class="btn btn-success w-100">Продолжить</button>
-                    <a href="{% url 'shift_scan_page' %}" class="btn btn-dark w-100 mt-2">Назад</a>
+                </form>
+                <form id='backBtn' method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="back" class="btn btn-dark w-100">Назад</button>
                 </form>
             </div>
         </div>
     </div>
-
 
     <script>
         document.getElementById('uploadForm').addEventListener('submit', function (event) {
             var formData = document.getElementById('partname').value.trim();
             if (formData === '') {
                 alert('Поле не может быть пустым!');
-                event.preventDefault(); // Эта строка предотвращает отправку формы
+                event.preventDefault(); // Prevents form submission
             }
         });
 
         document.getElementById('scanForm').addEventListener('submit', function (event) {
             event.preventDefault();
             var formData = new FormData(this);
-            var url = '/qr-decoder/';  // URL для обработки формы на сервере
+            var url = '/qr-decoder/';  // URL for form processing on the server
             var xhr = new XMLHttpRequest();
             xhr.open('POST', url, true);
             xhr.onreadystatechange = function () {

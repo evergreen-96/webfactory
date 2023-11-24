@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="utf-8">
@@ -7,6 +7,42 @@
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
     <title>WebFactory</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .navbar {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-nav {
+            margin-left: auto;
+        }
+
+        .nav-link {
+            color: #495057;
+        }
+
+        #current-time {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-4">
@@ -15,9 +51,14 @@
             {% if custom_user %}
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <div class="container-fluid">
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarNav"
+                                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <span class="navbar-toggler-icon"></span>
+                        </button>
                         <a class="navbar-brand" href="#">WebFactory</a>
                         <div class="collapse navbar-collapse" id="navbarNav">
-                            <ul class="navbar-nav">
+                            <ul class="navbar-nav ms-auto">
                                 <li class="nav-item">
                                     <a class="nav-link">{{ custom_user.user }}</a>
                                 </li>
@@ -30,7 +71,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link">Роль: {{ custom_user.role }}</a>
                                 </li>
-                                <li class="nac-item">
+                                <li class="nav-item">
                                     <p class="lead" id="current-time">Текущее время: Loading...</p>
                                 </li>
                             </ul>
@@ -42,8 +83,9 @@
             {% endif %}
         </div>
     </div>
+    <br>
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 mx-auto"> <!-- Apply mx-auto for centering -->
             {% block content %}
             {% endblock %}
         </div>
