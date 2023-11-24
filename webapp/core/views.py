@@ -74,10 +74,14 @@ def shift_main_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     machines = custom_user.machine.all()
     shift = get_last_or_create_shift(custom_user)
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
-        'machines': machines
+        'machines': machines,
+        'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
         selected_machine_id = request.POST.get('selected_machine_id')
@@ -98,25 +102,37 @@ def shift_main_view(request):
             return redirect('shift_main_page')
         if 'end_shift' in request.POST:
             count_and_end_shift(shift)
-            return redirect('shift_main_page')
+            return redirect('main')
     return render(request, 'include/shift/main_page.html', context)
 
 
 def order_scan_view(request):
-    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    context = {
+        'user': request.user,
+        'custom_user': custom_user,
+        'shift': shift,
+        'order': order
+    }
     if request.method == 'POST':
         part_name = request.POST.get('partname')
         add_part_name(order, part_name)
         return redirect('shift_qauntity_page')
-    return render(request, 'include/shift/scan_name_page.html')
+    return render(request, 'include/shift/scan_name_page.html', context)
 
 
 def order_qauntity_view(request):
-    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    context = {
+        'user': request.user,
+        'custom_user': custom_user,
+        'shift': shift,
+        'order': order
+    }
 
     if request.method == 'POST':
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
@@ -127,13 +143,19 @@ def order_qauntity_view(request):
         add_start_working_time(order)
         return redirect('shift_setup_page')
 
-    return render(request, 'include/shift/quantity_page.html')
+    return render(request, 'include/shift/quantity_page.html', context)
 
 
 def order_setup_view(request):
-    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    context = {
+        'user': request.user,
+        'custom_user': custom_user,
+        'shift': shift,
+        'order': order
+    }
     if request.method == 'POST':
         print(request.POST)
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
@@ -141,26 +163,38 @@ def order_setup_view(request):
             return redirect('shift_main_page')
         add_machine_start_time(order)
         return redirect('shift_processing_page')
-    return render(request, 'include/shift/setup_page.html')
+    return render(request, 'include/shift/setup_page.html', context)
 
 
 def order_processing_view(request):
-    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    context = {
+        'user': request.user,
+        'custom_user': custom_user,
+        'shift': shift,
+        'order': order
+    }
     if request.method == 'POST':
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
             set_on_hold(request, order)
             return redirect('shift_main_page')
         add_machine_end_time(order)
         return redirect('shift_ending_page')
-    return render(request, 'include/shift/processing_page.html')
+    return render(request, 'include/shift/processing_page.html', context)
 
 
 def order_ending_view(request):
-    custom_user = CustomUserModel.objects.get(id=request.user.id)
+    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    context = {
+        'user': request.user,
+        'custom_user': custom_user,
+        'shift': shift,
+        'order': order
+    }
     if request.method == 'POST':
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
             set_on_hold(request, order)
@@ -169,7 +203,7 @@ def order_ending_view(request):
         machine_free(order)
         count_and_set_reports_duration(order)
         return redirect('shift_main_page')
-    return render(request, 'include/shift/ending_order_page.html')
+    return render(request, 'include/shift/ending_order_page.html', context)
 
 
 def report_send(request):

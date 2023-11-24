@@ -286,13 +286,51 @@ def count_and_end_shift(shift):
     """
     try:
         shift = calculate_shift_end_time(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in calculate_shift_end_time: {e}')
+        return shift
+
+    try:
         shift = count_num_ended_orders(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in count_num_ended_orders: {e}')
+        return shift
+
+    try:
         shift = calculate_shift_time_total(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in calculate_shift_time_total: {e}')
+        return shift
+
+    try:
         shift = calculate_total_bugs_time(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in calculate_total_bugs_time: {e}')
+        return shift
+
+    try:
         shift = calculate_good_time(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in calculate_good_time: {e}')
+        return shift
+
+    try:
         shift = calculate_bad_time(shift)
+        shift.save()
+    except Exception as e:
+        print(f'Error in calculate_bad_time: {e}')
+        return shift
+
+    try:
         shift = calculate_lost_time(shift)
         shift.save()
-    except TypeError as e:
-        print(f'!!! - {e} !!!')
-        shift.delete()
+    except Exception as e:
+        print(f'Error in calculate_lost_time: {e}')
+        return shift
+
+    return shift
