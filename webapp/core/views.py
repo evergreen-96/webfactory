@@ -188,6 +188,7 @@ def order_processing_view(request):
     return render(request, 'include/shift/processing_page.html', context)
 
 
+
 def order_ending_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)

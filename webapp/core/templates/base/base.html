@@ -6,43 +6,46 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    <title>WebFactory</title>
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
+    <title>
+        {% block title %}
+        {% endblock %}
+    </title>
+<style>
+    body {
+    background-color: #d0d0d0;
+}
 
-        .container {
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin-top: 20px;
-        }
+.container {
+    background-color: #fafafa;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
 
-        .navbar {
-            background-color: #ffffff;
-            border-bottom: 1px solid #dee2e6;
-        }
+.navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+}
 
-        .navbar-brand {
-            font-size: 24px;
-            font-weight: bold;
-        }
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+}
 
-        .navbar-nav {
-            margin-left: auto;
-        }
+.navbar-nav {
+    margin-left: auto;
+}
 
-        .nav-link {
-            color: #495057;
-        }
+.nav-link {
+    color: #495057;
+}
 
-        #current-time {
-            font-size: 18px;
-            margin-top: 10px;
-        }
-    </style>
+#current-time {
+    font-size: 18px;
+    margin-top: 10px;
+}
+</style>
 </head>
 <body>
 <div class="container mt-4">

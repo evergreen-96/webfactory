@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'base/base.html' %}
 
 {% block content %}
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-md-8 mx-auto">
             <h2 class="mb-4">Machine Selection</h2>
 
             {% for machine in machines %}
@@ -44,7 +44,7 @@
                 <button type="submit" name="end_shift" class="btn btn-secondary flex-fill">End shift</button>
             </form>
 
-            {% include "bugreport_form.html" %}
+            {% include "forms/bugreport_form.html" %}
         </div>
     </div>
 

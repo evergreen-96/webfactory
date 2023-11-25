@@ -1,9 +1,8 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block content %}
-    <div class="container-md">
+    <div class="container">
         <div class="row">
-            <!-- QR Code Scan Form -->
             <div class="col-md-6">
                 <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
                     {% csrf_token %}
@@ -12,7 +11,7 @@
                     <div class="input-group mb-3">
                         <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
                                class="form-control">
-                        <button name="action" value="scan" class="btn btn-secondary" type="submit">Сканировать</button>
+                        <button name="action" value="scan" class="btn btn-secondary w-100" type="submit">Сканировать</button>
                     </div>
                 </form>
             </div>
@@ -24,7 +23,7 @@
                     <p class="lead mb-3">Или введите название вручную</p>
                     <div class="input-group mb-3">
                         <input type="text" name="partname" id="partname" value="" class="form-control">
-                        <button type="submit" class="btn btn-success">Продолжить</button>
+                        <button type="submit" class="btn btn-success w-100 mt-2">Продолжить</button>
                     </div>
                 </form>
                 <form id='backBtn' method="post">

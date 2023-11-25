@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base/base.html" %}
 
 {% block content %}
     <div class="container-md mt-4">
@@ -8,7 +8,16 @@
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
-                        <p class="card-text">{{ order.part_name }} в количестве {{ order.num_parts }}</p>
+                        <table class="table">
+                            <tr>
+                                <td>Название детали:</td>
+                                <td>{{ order.part_name }}</td>
+                            </tr>
+                            <tr>
+                                <td>Общее количество</td>
+                                <td>{{ order.num_parts }}</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <form method="post" class="mt-4">
@@ -21,5 +30,5 @@
             </div>
         </div>
     </div>
-    {% include "bugreport_form.html" %}
+    {% include "forms/bugreport_form.html" %}
 {% endblock %}
