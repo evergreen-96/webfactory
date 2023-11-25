@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models.expressions import NoneType
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.cache import cache_control
 
 from core.buisness import *
 from core.forms import ReportEditForm
@@ -223,7 +224,7 @@ def report_send(request):
 
 def reports_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
-    user_reports = ReportsModel.objects.filter(user=custom_user).order_by('-start_time')
+    user_reports = ReportsModel.objects.filter(user=custom_user).order_by('-start_time').order_by('is_solved')
     form = ReportEditForm()
 
     context = {
