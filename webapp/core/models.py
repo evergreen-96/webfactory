@@ -99,7 +99,7 @@ class OrdersModel(models.Model):
 
 
     def __str__(self):
-        return f'{self.id} |{self.related_to_shift.id} {self.user} | ' \
+        return f'{self.id} | {self.user} | ' \
                f'{self.part_name} - {self.num_parts}'
 
 
@@ -122,7 +122,7 @@ class ReportsModel(models.Model):
         is_solved = 'Открыт'
         if self.is_solved:
             is_solved = 'Закрыт'
-        return f'{self.start_time.date()} | {self.order.related_to_shift.id} | {is_solved}'
+        return f'{self.start_time.date()} | {self.order} |{self.user} | {is_solved}'
 
 
 class UserRequestsModel(models.Model):
