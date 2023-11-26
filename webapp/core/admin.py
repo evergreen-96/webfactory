@@ -9,7 +9,6 @@ class MachineTypesModelAdmin(admin.ModelAdmin):
 class MachineModelAdmin(admin.ModelAdmin):
     list_display = [field.name for field in MachineModel._meta.fields]
     list_filter = [field.name for field in MachineModel._meta.fields ]
-    search_fields = [field.name for field in MachineModel._meta.fields]
 
 
 class RoleModelAdmin(admin.ModelAdmin):
@@ -37,14 +36,12 @@ class CustomUserModelAdmin(admin.ModelAdmin):
 class ShiftModelAdmin(admin.ModelAdmin):
     list_display = [field.name for field in ShiftModel._meta.fields]
     list_filter = [field.name for field in ShiftModel._meta.fields ]
-    search_fields = [field.name for field in ShiftModel._meta.fields]
     date_hierarchy = 'start_time'
 
 
 class OrdersModelAdmin(admin.ModelAdmin):
     list_display = [field.name for field in OrdersModel._meta.fields]
-    list_filter = [field.name for field in OrdersModel._meta.fields ]
-    search_fields = [field.name for field in OrdersModel._meta.fields]
+    list_filter = ['user', 'machine', 'related_to_shift', 'hold_ended' ,'ended_early']
     date_hierarchy = 'start_time'
 
 
@@ -73,7 +70,3 @@ admin.site.register(CustomUserModel, CustomUserModelAdmin)
 admin.site.register(PositionsModel, PositionsModelAdmin)
 admin.site.register(RoleModel, RoleModelAdmin)
 admin.site.register(MachineModel, MachineModelAdmin)
-
-admin.site.site_header = "WebFactory Admin Panel"
-admin.site.site_title = "WebFactory Admin Panel"
-admin.site.index_title = "Основной раздел администрирования"

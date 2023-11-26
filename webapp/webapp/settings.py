@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-
     'core',
     'debug_toolbar',
     'api_v1'
@@ -135,7 +135,21 @@ LOGGING_DIR = os.path.join(BASE_DIR, 'logs')  # Путь к папке для х
 if not os.path.exists(LOGGING_DIR):
     os.makedirs(LOGGING_DIR)
 
-if DEBUG:
+if DEBUG == False:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: False,
     }
+
+JAZZMIN_SETTINGS = {
+    "copyright": "RNovikov production",
+    "site_brand": "WebFactory Admin",
+    "site_title": "WebFactory",
+    "order_with_respect_to": ["core.shiftmodel", "core.ordersmodel",
+                               "core.customusermodel", "core.MachineTypesModel",
+                              "core.machineModel","core.workingareamodel",
+                              "core.positionsModel", "core.rolemodel"],
+    "topmenu_links": [
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Открыть сайт", "url": "http://212.109.199.169:8000/", "new_window": True},
+    ]
+}
