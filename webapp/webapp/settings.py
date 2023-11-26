@@ -29,6 +29,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -36,7 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-
     'core',
     'debug_toolbar',
     'api_v1'
@@ -135,7 +135,7 @@ LOGGING_DIR = os.path.join(BASE_DIR, 'logs')  # Путь к папке для х
 if not os.path.exists(LOGGING_DIR):
     os.makedirs(LOGGING_DIR)
 
-if DEBUG:
+if DEBUG == False:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: False,
     }

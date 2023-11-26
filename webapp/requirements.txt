@@ -6,3 +6,5 @@ django-debug-toolbar==4.2.0
 Pillow
 pyzbar
 python-dotenv==1.0.0
+
+django-jazzmin
