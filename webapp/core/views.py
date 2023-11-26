@@ -120,6 +120,7 @@ def order_scan_view(request):
     if request.method == 'POST':
         if 'back' in request.POST:
             machine_free(order, 'in_progress')
+            order.delete()
             return redirect('shift_main_page')
         part_name = request.POST.get('partname')
         add_part_name(order, part_name)
