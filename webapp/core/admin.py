@@ -70,7 +70,3 @@ admin.site.register(CustomUserModel, CustomUserModelAdmin)
 admin.site.register(PositionsModel, PositionsModelAdmin)
 admin.site.register(RoleModel, RoleModelAdmin)
 admin.site.register(MachineModel, MachineModelAdmin)
-
-admin.site.site_header = "WebFactory Admin Panel"
-admin.site.site_title = "WebFactory Admin Panel"
-admin.site.index_title = "Основной раздел администрирования"

@@ -139,3 +139,17 @@ if DEBUG == False:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: False,
     }
+
+JAZZMIN_SETTINGS = {
+    "copyright": "RNovikov production",
+    "site_brand": "WebFactory Admin",
+    "site_title": "WebFactory",
+    "order_with_respect_to": ["core.shiftmodel", "core.ordersmodel",
+                               "core.customusermodel", "core.MachineTypesModel",
+                              "core.machineModel","core.workingareamodel",
+                              "core.positionsModel", "core.rolemodel"],
+    "topmenu_links": [
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Открыть сайт", "url": "http://212.109.199.169:8000/", "new_window": True},
+    ]
+}
