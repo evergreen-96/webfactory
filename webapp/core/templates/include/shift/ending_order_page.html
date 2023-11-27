@@ -5,6 +5,10 @@
         <div class="row">
             <div class="col-md-12">
                 <h1 class="display-5">Окончание работы</h1>
+                <hr>
+                <div class="card mt-1">
+                    <h5>Нажмите "Заказ на стеллаже готовой продукции", если деталь на стеллаже готовой продукции</h5>
+                </div>
                 <div class="card mt-4">
                     <div class="card-body">
                         <h3 class="card-title">Сейчас в работе:</h3>
@@ -22,7 +26,7 @@
                 </div>
                 <form method="post" class="mt-4">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-success w-100">Продолжить</button>
+                    <button type="submit" class="btn btn-success w-100">Заказ на стеллаже готовой продукции</button>
                     <button type="submit" name="pause_shift" class="btn btn-outline-danger w-100 mt-2">Приостановить
                         работу/перейти к другому станку
                     </button>
