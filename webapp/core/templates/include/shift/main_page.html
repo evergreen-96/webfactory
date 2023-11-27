@@ -25,6 +25,11 @@
                     </label>
                 </div>
             {% endfor %}
+        {% for message in messages %}
+            {{ message }}
+
+        {% endfor %}
+
 
             <form method="post" class="d-flex flex-column">
                 {% csrf_token %}

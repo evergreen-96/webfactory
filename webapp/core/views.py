@@ -102,6 +102,9 @@ def shift_main_view(request):
             stop_order(order)
             return redirect('shift_main_page')
         if 'end_shift' in request.POST:
+            if check_shift_orders_ended:
+                messages.error(request, 'Завершите работу на всех станках!')
+                return redirect('shift_main_page')
             count_and_end_shift(shift)
             return redirect('main')
     return render(request, 'include/shift/main_page.html', context)

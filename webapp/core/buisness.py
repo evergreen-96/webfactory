@@ -29,6 +29,18 @@ def get_last_or_create_shift(custom_user):
         return last_shift
 
 
+def check_shift_orders_ended(shift):
+    """
+    Проверяет, завершены ли все заказы в указанной смене.
+    Возвращает True, если все заказы завершены, иначе False.
+    """
+    orders = OrdersModel.objects.filter(related_to_shift=shift)
+    for order in orders:
+        if not order.is_ended():
+            return False
+    return True
+
+
 def start_new_order(custom_user, shift, selected_machine):
     machine = MachineModel.objects.get(id=selected_machine)
     machine.is_in_progress = True
@@ -53,6 +65,7 @@ def get_order(custom_user, shift, selected_machine):
 
 
 def stop_order(order):
+
     machine = MachineModel.objects.get(id=order.machine_id)
     machine.is_in_progress = False
     order.ended_early = True
@@ -334,3 +347,4 @@ def count_and_end_shift(shift):
         return shift
 
     return shift
+
