@@ -1,10 +1,13 @@
 {% extends "base/base.html" %}
-
+{% load static %}
 {% block content %}
     <div class="container-md mt-4">
         <div class="row">
             <div class="col-md-12">
-                <h1 class="display-5">Подготовка и наладка</h1>
+                <h1 class="display-5">Подготовка и наладка
+                <img src="{% static 'images/setup_icon.png' %}" width="75" height="75" alt="Наладка">
+                </h1>
+
                 <hr>
                 <div class="card mt-1">
                     <h5>Подготовьте и наладьте станок.</h5>
