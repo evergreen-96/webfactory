@@ -111,11 +111,15 @@ def order_scan_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'shift': shift,
-        'order': order
+        'order': order,
+        'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
         if 'back' in request.POST:
@@ -132,11 +136,15 @@ def order_qauntity_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'shift': shift,
-        'order': order
+        'order': order,
+        'has_unsolved_reports': has_unsolved_reports
     }
 
     if request.method == 'POST':
@@ -155,11 +163,15 @@ def order_setup_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'shift': shift,
-        'order': order
+        'order': order,
+        'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
         print(request.POST)
@@ -175,11 +187,15 @@ def order_processing_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'shift': shift,
-        'order': order
+        'order': order,
+        'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
@@ -195,11 +211,15 @@ def order_ending_view(request):
     custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
+    has_unsolved_reports = ReportsModel.objects.filter(
+        order__related_to_shift=shift, is_solved=False
+    ).exists()
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'shift': shift,
-        'order': order
+        'order': order,
+        'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"

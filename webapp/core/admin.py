@@ -1,6 +1,7 @@
 from django.contrib import admin
 from core.models import *
 
+
 class MachineTypesModelAdmin(admin.ModelAdmin):
     list_display = ['machine_type']
     search_fields = ['machine_type']

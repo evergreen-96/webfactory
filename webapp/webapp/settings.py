@@ -113,9 +113,9 @@ LANGUAGE_CODE = 'ru-Rus'
 
 TIME_ZONE = 'Asia/Yekaterinburg'
 
-USE_I18N = True
-
-USE_TZ = True
+DATETIME_FORMAT = 'd.m.Y H:i:s'
+USE_L10N = False
+USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -126,7 +126,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'core/static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 
 DEBUG_TOOLBAR_CONFIG = {
