@@ -1,10 +1,11 @@
 {% extends 'base/base.html' %}
 
+
+
 {% block content %}
     <div class="row">
         <div class="col-md-8 mx-auto">
             <h2 class="mb-4">Machine Selection</h2>
-
             {% for machine in machines %}
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="radio" name="machine" value="{{ machine.id }}"
@@ -18,17 +19,18 @@
                             <span class="text-danger"> - BROKEN</span>
                         {% endif %}
                         {% if machine.is_in_progress %}
-                            <span class="text-success"> - IN PROGRESS</span>
+                            <span class="text-success"> - Деталь: {{ machine.order_in_progress.part_name }} в работе</span>
+
                             {% with any_machine_in_progress=True %}
                             {% endwith %}
                         {% endif %}
                     </label>
                 </div>
             {% endfor %}
-        {% for message in messages %}
-            {{ message }}
+            {% for message in messages %}
+                {{ message }}
 
-        {% endfor %}
+            {% endfor %}
 
 
             <form method="post" class="d-flex flex-column">
@@ -36,17 +38,17 @@
                 <input type="hidden" name="selected_machine_id" id="selectedMachineId" value="">
                 <button type="submit" name="continue" id="continueButton" class="btn btn-primary mb-2 flex-fill"
                         disabled>
-                    Continue working
+                    Продолжить работу
                 </button>
                 <button type="submit" name="start_new" id="startNewButton" class="btn btn-success mb-2 flex-fill"
                         {% if any_machine_in_progress or not any_machine_not_broken %}disabled{% endif %}>
-                    Start new
+                    Начать новый заказ с выбранным станком
                 </button>
                 <button type="submit" name="stop_working" id="stopWorkingButton" class="btn btn-danger mb-2 flex-fill"
                         disabled>
-                    Stop working
+                    Экстренное завершение работы
                 </button>
-                <button type="submit" name="end_shift" class="btn btn-secondary flex-fill">End shift</button>
+                <button type="submit" name="end_shift" class="btn btn-secondary flex-fill">Закончить смену</button>
             </form>
 
             {% include "forms/justreport_form.html" %}

@@ -21,6 +21,8 @@ class MachineModel(models.Model):
     machine_name = models.CharField(max_length=512, verbose_name='Название станка')
     is_broken = models.BooleanField(default=False, verbose_name='Сломан?')
     is_in_progress = models.BooleanField(default=False, verbose_name='В работе?')
+    order_in_progress = models.ForeignKey('OrdersModel', on_delete=models.CASCADE,
+                                          default=None, null=True, blank=True)
 
     def __str__(self):
         return f'{self.machine_name} | Тип: {self.machine_type}'

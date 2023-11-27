@@ -29,12 +29,14 @@ def get_last_or_create_shift(custom_user):
         return last_shift
 
 
-def check_shift_orders_ended(shift):
+def is_all_orders_ended(shift):
     """
     Проверяет, завершены ли все заказы в указанной смене.
     Возвращает True, если все заказы завершены, иначе False.
     """
     orders = OrdersModel.objects.filter(related_to_shift=shift)
+    if not orders:
+        return True  # Все заказы завершены, если список пуст
     for order in orders:
         if not order.is_ended():
             return False
@@ -44,14 +46,14 @@ def check_shift_orders_ended(shift):
 def start_new_order(custom_user, shift, selected_machine):
     machine = MachineModel.objects.get(id=selected_machine)
     machine.is_in_progress = True
-    machine.save()
-
     new_order = OrdersModel.objects.create(
         user=custom_user,
         machine=machine,
         related_to_shift=shift,
         start_time=timezone.now()
     )
+    machine.order_in_progress = new_order
+    machine.save()
     return new_order
 
 
@@ -68,6 +70,7 @@ def stop_order(order):
 
     machine = MachineModel.objects.get(id=order.machine_id)
     machine.is_in_progress = False
+    machine.order_in_progress = None
     order.ended_early = True
     order.end_working_time = timezone.now()
     machine.save()
@@ -115,10 +118,12 @@ def add_end_working_time(order):
 def machine_free(order, status='in_progress'):
     machine = MachineModel.objects.get(id=order.machine_id)
     if status == 'in_progress':
+        machine.order_in_progress = None
         machine.is_in_progress = False
     elif status == 'broken':
         machine.is_broken = False
     elif status == 'both':
+        machine.order_in_progress = None
         machine.is_broken = False
         machine.is_in_progress = False
     machine.save()
@@ -215,7 +220,7 @@ def count_num_ended_orders(shift):
     Количество завершенных заказов
     """
     shift.num_ended_orders = OrdersModel.objects.filter(
-        related_to_shift=shift).count()
+        related_to_shift=shift, ended_early=False).count()
     return shift
 
 
@@ -267,14 +272,25 @@ def calculate_bad_time(shift):
     total_bad_time = timedelta()
 
     for order in OrdersModel.objects.filter(related_to_shift=shift):
-        bad_time_in_order = (
-                order.end_working_time - order.scan_time -
-                (order.machine_end_time - order.machine_start_time) -
-                order.bugs_time
-        )
-        total_bad_time += bad_time_in_order
+        if (
+            order.end_working_time is not None and
+            order.scan_time is not None and
+            order.machine_end_time is not None and
+            order.machine_start_time is not None and
+            order.bugs_time is not None
+        ):
+            bad_time_in_order = (
+                    order.end_working_time - order.scan_time -
+                    (order.machine_end_time - order.machine_start_time) -
+                    order.bugs_time
+            )
+            total_bad_time += bad_time_in_order
 
-    shift.bad_time = total_bad_time
+    if shift.bad_time is not None:
+        shift.bad_time += total_bad_time
+    else:
+        shift.bad_time = total_bad_time
+
     return shift
 
 

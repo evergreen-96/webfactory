@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -78,11 +80,12 @@ def shift_main_view(request):
     has_unsolved_reports = ReportsModel.objects.filter(
         order__related_to_shift=shift, is_solved=False
     ).exists()
+
     context = {
         'user': request.user,
         'custom_user': custom_user,
         'machines': machines,
-        'has_unsolved_reports': has_unsolved_reports
+        'has_unsolved_reports': has_unsolved_reports,
     }
     if request.method == 'POST':
         selected_machine_id = request.POST.get('selected_machine_id')
@@ -102,7 +105,7 @@ def shift_main_view(request):
             stop_order(order)
             return redirect('shift_main_page')
         if 'end_shift' in request.POST:
-            if check_shift_orders_ended:
+            if not is_all_orders_ended(shift):
                 messages.error(request, 'Завершите работу на всех станках!')
                 return redirect('shift_main_page')
             count_and_end_shift(shift)
