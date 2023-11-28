@@ -276,7 +276,6 @@ def reports_view(request):
 def request_send(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     if request.method == 'POST':
-        pass
         add_request(request, custom_user)
         return HttpResponse('Request sent successfully')
     else:
