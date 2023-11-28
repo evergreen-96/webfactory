@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Page</title>
+    <!-- Include Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<style>
+    body{
+        background-color: #383838;
+    }
+</style>
+<body>
+
+<!-- Container for the Plotly chart -->
+<div id="chart-container"></div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Make a request to 'chart-data/' endpoint
+    fetch('/chart/')
+        .then(response => response.json())
+        .then(data => {
+            // Extract data from the JSON response
+            const shiftLabels = data.data.Shift;
+            const cumulativeGoodTime = data.data['Cumulative Good Time'];
+            const cumulativeBadTime = data.data['Cumulative Bad Time'];
+            const cumulativeLostTime = data.data['Cumulative Lost Time'];
+
+            // Create a Plotly chart
+            const chartData = [
+                {
+                    type: 'bar',
+                    x: shiftLabels,
+                    y: cumulativeGoodTime,
+                    name: 'Cumulative Good Time'
+                },
+                {
+                    type: 'bar',
+                    x: shiftLabels,
+                    y: cumulativeBadTime,
+                    name: 'Cumulative Bad Time'
+                },
+                {
+                    type: 'bar',
+                    x: shiftLabels,
+                    y: cumulativeLostTime,
+                    name: 'Cumulative Lost Time'
+                }
+            ];
+
+            const layout = {
+                barmode: 'stack', // Stack bars on top of each other
+                title: 'Shift Data Chart',
+                xaxis: { title: 'Shifts' },
+                yaxis: { title: 'Cumulative Time (seconds)' }
+            };
+
+            Plotly.newPlot('chart-container', chartData, layout);
+        })
+        .catch(error => console.error('Error fetching chart data:', error));
+});
+</script>
+
+</body>
+</html>

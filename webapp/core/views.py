@@ -8,6 +8,7 @@ from django.db.models.expressions import NoneType, Case, When
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_control
+from django.views.generic import TemplateView
 
 from core.buisness import *
 from core.forms import ReportEditForm
@@ -281,33 +282,8 @@ def request_send(request):
         return HttpResponse('Bad request')
 
 
-import plotly.express as px
-import pandas as pd
-def chart1_view(request):
-    shifts_with_total_parts = ShiftModel.objects.all().annotate(
-        total_num_parts=Sum('stat_orders__num_parts')
-    )
 
-    # Create a DataFrame to store the data
-    data = {
-        'Shift': [],
-        'Total Num Parts': [],
-    }
 
-    # Populate the DataFrame with shift and total num_parts data
-    for shift in shifts_with_total_parts:
-        data['Shift'].append(f'Shift {shift.id}')
-        data['Total Num Parts'].append(shift.total_num_parts)
 
-    df = pd.DataFrame(data)
 
-    # Create a pie chart using Plotly Express
-    fig = px.pie(
-        df,
-        names='Shift',
-        values='Total Num Parts',
-        title='Total Number of Parts for Each Shift',
-        hole=0.3,  # Set the size of the center hole in the pie chart
-    )
-    chart = fig.to_html()
-    return render(request, 'include/charts/chart1.html', {'chart':chart})
+

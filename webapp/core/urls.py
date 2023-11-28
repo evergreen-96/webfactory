@@ -2,7 +2,7 @@ from django.urls import path
 
 from core.views import decode_photo, pre_shift_view, login_view, logout_view, shift_main_view, order_scan_view, \
     order_qauntity_view, order_setup_view, order_processing_view, order_ending_view, report_send, reports_view, \
-    request_send, chart1_view
+    request_send
 
 urlpatterns = [
     path('', pre_shift_view, name='main'),
@@ -18,7 +18,6 @@ urlpatterns = [
     path('shift/ending/', order_ending_view, name='shift_ending_page'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
-    path('chart/', chart1_view, name='chart1'),
     # path('backup/', backup, name='backup'),
 
 ]
