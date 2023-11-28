@@ -144,17 +144,21 @@ def remove_hold(order):
 
 
 def add_report(request, order, custom_user):
+    current_url = request.META.get('HTTP_REFERER', '/')
     ReportsModel.objects.create(
         user=custom_user,
         order=order,
         description=request.POST.get('bug_description'),
         start_time=timezone.now(),
-        url=request.META.get('HTTP_REFERER', '/')
+        url=current_url
     )
     machine_id = order.machine.id
     machine = MachineModel.objects.get(id=machine_id)
     machine.is_broken = True
     machine.save()
+
+    order.hold_url= current_url
+    order.save()
 
 
 def get_all_reports(user):
