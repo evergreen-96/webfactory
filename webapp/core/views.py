@@ -3,7 +3,8 @@ from collections import defaultdict
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db.models.expressions import NoneType
+from django.db import models
+from django.db.models.expressions import NoneType, Case, When
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.cache import cache_control
@@ -80,7 +81,6 @@ def shift_main_view(request):
     has_unsolved_reports = ReportsModel.objects.filter(
         order__related_to_shift=shift, is_solved=False
     ).exists()
-
     context = {
         'user': request.user,
         'custom_user': custom_user,
@@ -180,7 +180,6 @@ def order_setup_view(request):
         'has_unsolved_reports': has_unsolved_reports
     }
     if request.method == 'POST':
-        print(request.POST)
         if 'pause_shift' in request.POST:  # Обработка кнопки "Приостановить работу/перейти к другому станку"
             set_on_hold(request, order)
             return redirect('shift_main_page')
@@ -280,3 +279,35 @@ def request_send(request):
         return HttpResponse('Request sent successfully')
     else:
         return HttpResponse('Bad request')
+
+
+import plotly.express as px
+import pandas as pd
+def chart1_view(request):
+    shifts_with_total_parts = ShiftModel.objects.all().annotate(
+        total_num_parts=Sum('stat_orders__num_parts')
+    )
+
+    # Create a DataFrame to store the data
+    data = {
+        'Shift': [],
+        'Total Num Parts': [],
+    }
+
+    # Populate the DataFrame with shift and total num_parts data
+    for shift in shifts_with_total_parts:
+        data['Shift'].append(f'Shift {shift.id}')
+        data['Total Num Parts'].append(shift.total_num_parts)
+
+    df = pd.DataFrame(data)
+
+    # Create a pie chart using Plotly Express
+    fig = px.pie(
+        df,
+        names='Shift',
+        values='Total Num Parts',
+        title='Total Number of Parts for Each Shift',
+        hole=0.3,  # Set the size of the center hole in the pie chart
+    )
+    chart = fig.to_html()
+    return render(request, 'include/charts/chart1.html', {'chart':chart})
