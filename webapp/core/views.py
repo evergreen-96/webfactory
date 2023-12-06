@@ -1,14 +1,11 @@
-from collections import defaultdict
+import traceback
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.db import models
-from django.db.models.expressions import NoneType, Case, When
+from django.db.models.expressions import NoneType
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.decorators.cache import cache_control
-from django.views.generic import TemplateView
 
 from core.buisness import *
 from core.forms import ReportEditForm
@@ -95,7 +92,12 @@ def shift_main_view(request):
             order = get_order(custom_user, shift, selected_machine_id)
             url = order.hold_url
             if type(url) is NoneType:
-                url = ReportsModel.objects.filter(order__machine_id=selected_machine_id).last().url
+                try:
+                    url = ReportsModel.objects.filter(order__machine_id=selected_machine_id).last().url
+                except:
+                    return HttpResponse(f'Произошла ошибка: <br>{traceback.format_exc()} '
+                                        f'<br> Пожалуйста, сделайте скриншот и отправьте администратору, мы поправим :)'
+                                        f'А пока что вернитесь назад используя браузер и экстренно завершив заказ')
             remove_hold(order)
             return redirect(url)
         if 'start_new' in request.POST:
