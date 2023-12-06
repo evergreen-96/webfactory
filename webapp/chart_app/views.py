@@ -1,11 +1,12 @@
-import os
-
-from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from core.models import ShiftModel
+from core.buisness import *
+from core.models import CustomUserModel
 
+
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
 def chart_view(request, **kwargs):
     shifts = ShiftModel.objects.all()
@@ -18,6 +19,12 @@ def chart_view(request, **kwargs):
         'cumulative_lost_time': [shift.lost_time.total_seconds() if shift.lost_time else 0 for shift in shifts],
     }
 
+    # Data for solved and unsolved reports
+    solved_reports = ReportsModel.objects.filter(is_solved=True,
+                                                 user=CustomUserModel.objects.get(user=request.user)).count()
+    unsolved_reports = ReportsModel.objects.filter(is_solved=False,
+                                                   user=CustomUserModel.objects.get(user=request.user)).count()
+
     # Prepare data for JSON response
     json_data = {
         'data': {
@@ -25,12 +32,13 @@ def chart_view(request, **kwargs):
             'Cumulative Good Time': chart_data['cumulative_good_time'],
             'Cumulative Bad Time': chart_data['cumulative_bad_time'],
             'Cumulative Lost Time': chart_data['cumulative_lost_time'],
+            'Solved Reports': solved_reports,
+            'Unsolved Reports': unsolved_reports,
         }
     }
-    # Check if the request is an AJAX request
 
-    if request.is_ajax():
-        return JsonResponse(json_data)
+    if is_ajax(request):
+        return JsonResponse(json_data, safe=False)
 
     # Render the HTML page with the chart
     context = {'chart_data': chart_data}

@@ -14,23 +14,31 @@
 </style>
 <body>
 
-<!-- Container for the Plotly chart -->
+<!-- Container for the Plotly charts -->
 <div id="chart-container"></div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Make a request to 'chart-data/' endpoint
-    fetch('/chart/')
+    // Fetch data for the charts
+    fetch('/chart/', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
         .then(response => response.json())
         .then(data => {
             // Extract data from the JSON response
-            const shiftLabels = data.data.Shift;
-            const cumulativeGoodTime = data.data['Cumulative Good Time'];
-            const cumulativeBadTime = data.data['Cumulative Bad Time'];
-            const cumulativeLostTime = data.data['Cumulative Lost Time'];
+            var shiftLabels = data.data.Shift;
+            var cumulativeGoodTime = data.data['Cumulative Good Time'];
+            var cumulativeBadTime = data.data['Cumulative Bad Time'];
+            var cumulativeLostTime = data.data['Cumulative Lost Time'];
+            var solvedReports = data.data['Solved Reports'];
+            var unsolvedReports = data.data['Unsolved Reports'];
 
-            // Create a Plotly chart
-            const chartData = [
+            // Create a Plotly chart for the first set of data
+            var chartData = [
                 {
                     type: 'bar',
                     x: shiftLabels,
@@ -54,11 +62,24 @@ document.addEventListener('DOMContentLoaded', function () {
             const layout = {
                 barmode: 'stack', // Stack bars on top of each other
                 title: 'Shift Data Chart',
-                xaxis: { title: 'Shifts' },
-                yaxis: { title: 'Cumulative Time (seconds)' }
+                xaxis: {title: 'Shifts'},
+                yaxis: {title: 'Cumulative Time (seconds)'}
             };
 
             Plotly.newPlot('chart-container', chartData, layout);
+
+            // Create a Plotly chart for the second set of data (Pie chart)
+            var pieChartData = [{
+                values: [solvedReports, unsolvedReports],
+                labels: ['Solved Reports', 'Unsolved Reports'],
+                type: 'pie'
+            }];
+
+            const pieLayout = {
+                title: 'Solved and Unsolved Reports Pie Chart'
+            };
+
+            Plotly.newPlot('chart-container', pieChartData, pieLayout);
         })
         .catch(error => console.error('Error fetching chart data:', error));
 });
