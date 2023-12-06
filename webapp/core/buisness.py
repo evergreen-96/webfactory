@@ -67,7 +67,6 @@ def get_order(custom_user, shift, selected_machine):
 
 
 def stop_order(order):
-
     machine = MachineModel.objects.get(id=order.machine_id)
     machine.is_in_progress = False
     machine.order_in_progress = None

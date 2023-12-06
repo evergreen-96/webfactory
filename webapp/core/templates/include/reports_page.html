@@ -3,8 +3,8 @@
 {% block content %}
     <style>
         .custom-checkbox {
-            width: 1.5em; /* Измените значение по вашему усмотрению */
-            height: 1.5em; /* Измените значение по вашему усмотрению */
+            width: 1.5em;
+            height: 1.5em;
         }
 
         .solved-reports {
@@ -21,7 +21,7 @@
 
         #returnToMainBtn {
             flex: 2;
-            margin-right: 5px; /* Добавлено небольшое пространство между кнопками */
+            margin-right: 5px;
         }
 
         #showSolvedBtn {
@@ -30,9 +30,9 @@
     </style>
     <div class="container-md mt-2">
         <div id="btnContainer">
-            <a href="{% url 'shift_main_page' %}" class="btn btn-dark w-100 mt-2" id="returnToMainBtn">Return to
-                main</a>
-            <button class="btn btn-info mt-2" id="showSolvedBtn">Show all</button>
+            <a href="{% url 'shift_main_page' %}" class="btn btn-dark w-100 mt-2" id="returnToMainBtn">Вернуться на
+                главную</a>
+            <button class="btn btn-info mt-2" id="showSolvedBtn">Показать решенные проблемы</button>
         </div>
     </div>
     <div class="container-md mt-2">
@@ -43,42 +43,35 @@
                         <div class="card-header  bg-success">
                             <h5 class="mb-0 d-flex justify-content-between align-items-center">
                                 {{ report.bug_description }}
-                                <button class="btn btn-primary btn-sm edit-bug-btn"
-                                        data-bug-id="{{ report.id }}">Edit Bug
-                                </button>
+
                             </h5>
                         </div>
-
                         <div class="card-body">
                             <table class="table">
                                 <tbody>
                                 <tr>
-                                    <th scope="row">User</th>
-                                    <td>{{ report.user }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Order</th>
+                                    <th scope="row">Номер заказа</th>
                                     <td>{{ report.order.id }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Description</th>
+                                    <th scope="row">Описание проблемы</th>
                                     <td>{{ report.description }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Start Time</th>
+                                    <th scope="row">Время сообщения о проблеме</th>
                                     <td>{{ report.start_time }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">End Time</th>
+                                    <th scope="row">Время решения</th>
                                     <td>{{ report.end_time }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Machine</th>
+                                    <th scope="row">Станок</th>
                                     <td>{{ report.order.machine.machine_name }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Is Solved</th>
-                                    <td>Решен</td>
+                                    <th scope="row">Решена ли проблема?</th>
+                                    <td>Решена</td>
                                 </tr>
                                 </tbody>
                             </table>
@@ -89,7 +82,7 @@
                             <form method="post" class="bug-edit-form">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <label for="report_description">Report Description</label>
+                                    <label for="report_description">Описание проблемы</label>
                                     <input type="text" class="form-control"
                                            id="report_description" name="report_description"
                                            value="{{ report.description }}">
@@ -117,7 +110,7 @@
                             <h5 class="mb-0 d-flex justify-content-between align-items-center">
                                 {{ report.bug_description }}
                                 <button class="btn btn-primary btn-sm edit-bug-btn"
-                                        data-bug-id="{{ report.id }}">Edit Bug
+                                        data-bug-id="{{ report.id }}">Редактировать проблему
                                 </button>
                             </h5>
                         </div>
@@ -125,33 +118,26 @@
                         <div class="card-body">
                             <table class="table">
                                 <tbody>
+                                <tbody>
                                 <tr>
-                                    <th scope="row">User</th>
-                                    <td>{{ report.user }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Order</th>
+                                    <th scope="row">Номер заказа</th>
                                     <td>{{ report.order.id }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Description</th>
+                                    <th scope="row">Описание проблемы</th>
                                     <td>{{ report.description }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Start Time</th>
+                                    <th scope="row">Время сообщения о проблеме</th>
                                     <td>{{ report.start_time }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">End Time</th>
-                                    <td>{{ report.end_time }}</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Machine</th>
+                                    <th scope="row">Станок</th>
                                     <td>{{ report.order.machine.machine_name }}</td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Is Solved</th>
-                                    <td>Не решен</td>
+                                    <th scope="row">Решена ли проблема?</th>
+                                    <td>Не решена</td>
                                 </tr>
                                 </tbody>
                             </table>

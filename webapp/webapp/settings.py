@@ -135,10 +135,10 @@ LOGGING_DIR = os.path.join(BASE_DIR, 'logs')  # Путь к папке для х
 if not os.path.exists(LOGGING_DIR):
     os.makedirs(LOGGING_DIR)
 
-if DEBUG == False:
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda request: False,
-    }
+# if DEBUG == False:
+#     DEBUG_TOOLBAR_CONFIG = {
+#         'SHOW_TOOLBAR_CALLBACK': lambda request: False,
+#     }
 
 JAZZMIN_SETTINGS = {
     "copyright": "RNovikov production",
@@ -150,6 +150,6 @@ JAZZMIN_SETTINGS = {
                               "core.positionsModel", "core.rolemodel"],
     "topmenu_links": [
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Открыть сайт", "url": "http://212.109.199.169:8000/", "new_window": True},
+        {"name": "Открыть основной сайт", "url": "http://212.109.199.169:8000/", "new_window": True},
     ]
 }

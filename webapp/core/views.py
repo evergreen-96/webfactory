@@ -88,6 +88,7 @@ def shift_main_view(request):
     if request.method == 'POST':
         selected_machine_id = request.POST.get('selected_machine_id')
         request.session['selected_machine_id'] = selected_machine_id
+
         if 'continue' in request.POST:
             order = get_order(custom_user, shift, selected_machine_id)
             url = order.hold_url
@@ -100,13 +101,16 @@ def shift_main_view(request):
                                         f'А пока что вернитесь назад используя браузер и экстренно завершив заказ')
             remove_hold(order)
             return redirect(url)
+
         if 'start_new' in request.POST:
             start_new_order(custom_user, shift, selected_machine_id)
             return redirect('shift_scan_page')
+
         if 'stop_working' in request.POST:
             order = get_order(custom_user, shift, selected_machine_id)
             stop_order(order)
             return redirect('shift_main_page')
+
         if 'end_shift' in request.POST:
             if not is_all_orders_ended(shift):
                 messages.error(request, 'Завершите работу на всех станках!')
@@ -116,8 +120,9 @@ def shift_main_view(request):
     return render(request, 'include/shift/main_page.html', context)
 
 
+@login_required
 def order_scan_view(request):
-    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     has_unsolved_reports = ReportsModel.objects.filter(
@@ -135,14 +140,16 @@ def order_scan_view(request):
             machine_free(order, 'in_progress')
             order.delete()
             return redirect('shift_main_page')
+
         part_name = request.POST.get('partname')
         add_part_name(order, part_name)
         return redirect('shift_qauntity_page')
     return render(request, 'include/shift/scan_name_page.html', context)
 
 
+@login_required
 def order_qauntity_view(request):
-    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     has_unsolved_reports = ReportsModel.objects.filter(
@@ -168,8 +175,9 @@ def order_qauntity_view(request):
     return render(request, 'include/shift/quantity_page.html', context)
 
 
+@login_required
 def order_setup_view(request):
-    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     has_unsolved_reports = ReportsModel.objects.filter(
@@ -191,8 +199,9 @@ def order_setup_view(request):
     return render(request, 'include/shift/setup_page.html', context)
 
 
+@login_required
 def order_processing_view(request):
-    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     has_unsolved_reports = ReportsModel.objects.filter(
@@ -214,9 +223,9 @@ def order_processing_view(request):
     return render(request, 'include/shift/processing_page.html', context)
 
 
-
+@login_required
 def order_ending_view(request):
-    custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+    custom_user = CustomUserModel.objects.get(id=request.user.id)
     shift = get_last_or_create_shift(custom_user)
     order = get_order(custom_user, shift, request.session.get('selected_machine_id'))
     has_unsolved_reports = ReportsModel.objects.filter(
@@ -251,6 +260,7 @@ def report_send(request):
         return HttpResponse('Bad request')
 
 
+@login_required
 def reports_view(request):
     custom_user = CustomUserModel.objects.get(id=request.user.id)
     user_reports = ReportsModel.objects.filter(user=custom_user).order_by('-start_time').order_by('is_solved')
