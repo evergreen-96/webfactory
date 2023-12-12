@@ -8,81 +8,84 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 <style>
-    body{
+    body {
         background-color: #383838;
     }
 </style>
 <body>
 
-<!-- Container for the Plotly charts -->
-<div id="chart-container"></div>
+<!-- Container for the bar chart -->
+<div id="bar-chart-container"></div>
+<br>
+<!-- Container for the pie chart -->
+<div id="pie-chart-container"></div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Fetch data for the charts
-    fetch('/chart/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-        .then(response => response.json())
-        .then(data => {
-            // Extract data from the JSON response
-            var shiftLabels = data.data.Shift;
-            var cumulativeGoodTime = data.data['Cumulative Good Time'];
-            var cumulativeBadTime = data.data['Cumulative Bad Time'];
-            var cumulativeLostTime = data.data['Cumulative Lost Time'];
-            var solvedReports = data.data['Solved Reports'];
-            var unsolvedReports = data.data['Unsolved Reports'];
-
-            // Create a Plotly chart for the first set of data
-            var chartData = [
-                {
-                    type: 'bar',
-                    x: shiftLabels,
-                    y: cumulativeGoodTime,
-                    name: 'Cumulative Good Time'
-                },
-                {
-                    type: 'bar',
-                    x: shiftLabels,
-                    y: cumulativeBadTime,
-                    name: 'Cumulative Bad Time'
-                },
-                {
-                    type: 'bar',
-                    x: shiftLabels,
-                    y: cumulativeLostTime,
-                    name: 'Cumulative Lost Time'
-                }
-            ];
-
-            const layout = {
-                barmode: 'stack', // Stack bars on top of each other
-                title: 'Shift Data Chart',
-                xaxis: {title: 'Shifts'},
-                yaxis: {title: 'Cumulative Time (seconds)'}
-            };
-
-            Plotly.newPlot('chart-container', chartData, layout);
-
-            // Create a Plotly chart for the second set of data (Pie chart)
-            var pieChartData = [{
-                values: [solvedReports, unsolvedReports],
-                labels: ['Solved Reports', 'Unsolved Reports'],
-                type: 'pie'
-            }];
-
-            const pieLayout = {
-                title: 'Solved and Unsolved Reports Pie Chart'
-            };
-
-            Plotly.newPlot('chart-container', pieChartData, pieLayout);
+    document.addEventListener('DOMContentLoaded', function () {
+        // Fetch data for the charts
+        fetch('/chart/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
         })
-        .catch(error => console.error('Error fetching chart data:', error));
-});
+            .then(response => response.json())
+            .then(data => {
+                // Extract data from the JSON response
+                var shiftLabels = data.data.Shift;
+                var cumulativeGoodTime = data.data['Cumulative Good Time'];
+                var cumulativeBadTime = data.data['Cumulative Bad Time'];
+                var cumulativeLostTime = data.data['Cumulative Lost Time'];
+                var solvedReports = data.data['Solved Reports'];
+                var unsolvedReports = data.data['Unsolved Reports'];
+
+                // Create a Plotly bar chart
+                var barChartData = [
+                    {
+                        type: 'bar',
+                        x: shiftLabels,
+                        y: cumulativeGoodTime,
+                        name: 'Cumulative Good Time'
+                    },
+                    {
+                        type: 'bar',
+                        x: shiftLabels,
+                        y: cumulativeBadTime,
+                        name: 'Cumulative Bad Time'
+                    },
+                    {
+                        type: 'bar',
+                        x: shiftLabels,
+                        y: cumulativeLostTime,
+                        name: 'Cumulative Lost Time'
+                    }
+                ];
+
+                const barLayout = {
+                    barmode: 'stack', // Stack bars on top of each other
+                    title: 'Shift Data Chart',
+                    xaxis: {title: 'Shifts'},
+                    yaxis: {title: 'Cumulative Time (seconds)'}
+                };
+
+                Plotly.newPlot('bar-chart-container', barChartData, barLayout);
+
+                // Create a Plotly pie chart
+                var pieChartData = [{
+                    values: [solvedReports, unsolvedReports],
+                    labels: ['Solved Reports', 'Unsolved Reports'],
+                    type: 'pie'
+                }];
+
+                const pieLayout = {
+                    title: 'Solved and Unsolved Reports Pie Chart'
+                };
+
+                Plotly.newPlot('pie-chart-container', pieChartData, pieLayout);
+            })
+            .catch(error => console.error('Error fetching chart data:', error));
+    });
 </script>
 
 </body>
