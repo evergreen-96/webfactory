@@ -19,90 +19,92 @@
             background-color: #28a745;
             transition: width 0.3s ease-in-out;
         }
+
+        /* Стили для спиннера */
+        .spinner-container {
+            display: none;
+            margin-top: 10px;
+        }
     </style>
-            <div class="progress-bar-container">
-                <div class="progress-bar">
-                    <div class="progress-bar-fill" style="width: 16.6%;"></div>
-                </div>
-            </div>
-        </div>
-    <div class="container">
-        <div class="row">
-
-        <div class="col-md-6">
-
-            <!-- Scan Form -->
-            <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
-                {% csrf_token %}
-                <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
-                    автоматического распознавания артикула</label>
-                <div class="input-group mb-3">
-                    <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
-                           class="form-control">
-                    <button name="action" value="scan" class="btn btn-secondary w-100" type="submit">Сканировать
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Manual Entry Form -->
-        <div class="col-md-6">
-            <form id="uploadForm" method="post">
-                {% csrf_token %}
-                <p class="lead mb-3">Или введите название вручную</p>
-                <div class="input-group mb-3">
-                    <input type="text" name="partname" id="partname" value="" class="form-control">
-                    <button type="submit" class="btn btn-success w-100 mt-2">Продолжить</button>
-                </div>
-            </form>
-            <form id='backBtn' method="post">
-                {% csrf_token %}
-                <button type="submit" name="back" class="btn btn-dark w-100">Назад</button>
-            </form>
+    <div class="progress-bar-container">
+        <div class="progress-bar">
+            <div class="progress-bar-fill" style="width: 16.6%;"></div>
         </div>
     </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Scan Form -->
+                <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
+                    {% csrf_token %}
+                    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
+                        автоматического распознавания артикула</label>
+                    <div class="input-group mb-3">
+                        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
+                               class="form-control">
+                        <button name="action" value="scan" class="btn btn-secondary w-100" type="submit">
+                            Сканировать
+                        </button>
+                    </div>
+                </form>
+                <!-- Spinner -->
+                <div class="spinner-container">
+                    <div class="spinner-border text-success" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span>Подождите, идет распознавание</span>
+                </div>
+            </div>
 
-    <!-- Static Progress Bar -->
+            <!-- Manual Entry Form -->
+            <div class="col-md-6">
+                <form id="uploadForm" method="post">
+                    {% csrf_token %}
+                    <p class="lead mb-3">Или введите название вручную</p>
+                    <div class="input-group mb-3">
+                        <input type="text" name="partname" id="partname" value="" class="form-control">
+                        <button type="submit" class="btn btn-success w-100 mt-2">Продолжить</button>
+                    </div>
+                </form>
+                <form id='backBtn' method="post">
+                    {% csrf_token %}
+                    <button type="submit" name="back" class="btn btn-dark w-100">Назад</button>
+                </form>
+            </div>
+        </div>
+        <!-- Static Progress Bar -->
+        <script>
+            document.getElementById('scanForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+                var formData = new FormData(this);
+                var url = '/qr-decoder/';  // URL for form processing on the server
+                var progressBarFill = document.querySelector('.progress-bar-fill');
+                var spinnerContainer = document.querySelector('.spinner-container');
 
+                // Show spinner
+                spinnerContainer.style.display = 'block';
 
-    <script>
-        document.getElementById('uploadForm').addEventListener('submit', function (event) {
-            var formData = document.getElementById('partname').value.trim();
-            if (formData === '') {
-                alert('Поле не может быть пустым!');
-                event.preventDefault(); // Prevents form submission
-            }
-        });
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', url, true);
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState === 4) {
+                        // Hide spinner
+                        spinnerContainer.style.display = 'none';
 
-        document.getElementById('scanForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            var url = '/qr-decoder/';  // URL for form processing on the server
-            var progressBarFill = document.querySelector('.progress-bar-fill');
-
-            // Update progress bar
-            progressBarFill.style.width = '100%';
-
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', url, true);
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        var response = xhr.responseText;
-                        if (response === "Ошибка в декодировании") {
-                            alert("QR код не распознан, попробуйте еще раз");
+                        if (xhr.status === 200) {
+                            var response = xhr.responseText;
+                            if (response === "Ошибка в декодировании") {
+                                alert("QR код не распознан, попробуйте еще раз");
+                            } else {
+                                document.getElementById('partname').value = response;
+                            }
                         } else {
-                            document.getElementById('partname').value = response;
+                            alert("Ошибка, попробуйте еще раз");
                         }
-                    } else {
-                        alert("Ошибка, попробуйте еще раз");
                     }
-
-                    // Reset progress bar
-                    progressBarFill.style.width = '0%';
-                }
-            };
-            xhr.send(formData);
-        });
-    </script>
+                };
+                xhr.send(formData);
+            });
+        </script>
+    </div>
 {% endblock %}

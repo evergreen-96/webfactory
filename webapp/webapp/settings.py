@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 import os
+from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -152,4 +153,31 @@ JAZZMIN_SETTINGS = {
         # external url that opens in a new window (Permissions can be added)
         {"name": "Открыть основной сайт", "url": "http://212.109.199.169:8000/", "new_window": True},
     ]
+}
+
+LOGGING = {
+    'version': 1,
+    'name': 'django',
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'INFO',
+        },
+        'file': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': './logs/web',
+            'when': 'midnight',  # Ротация произойдет каждый день в полночь
+            'interval': 1,  # Интервал в днях
+            'backupCount': 7,  # Хранить последние 7 файлов
+            'level': 'INFO',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
 }
