@@ -1,5 +1,6 @@
+from django.db.models import Count
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from core.buisness import *
 from core.models import CustomUserModel
@@ -19,19 +20,21 @@ def chart_view(request, **kwargs):
         'cumulative_lost_time': [shift.lost_time.total_seconds() if shift.lost_time else 0 for shift in shifts],
     }
 
-    # Data for solved and unsolved reports
-    solved_reports = ReportsModel.objects.filter(is_solved=True,
-                                                 user=CustomUserModel.objects.get(user=request.user)).count()
-    unsolved_reports = ReportsModel.objects.filter(is_solved=False,
-                                                   user=CustomUserModel.objects.get(user=request.user)).count()
+    # Aggregate the counts of solved and unsolved reports
+    reports_data = (ReportsModel.objects.filter(user=request.user.customusermodel)
+                    .values('is_solved').annotate(count=Count('id')))
+
+    # Extract counts from the aggregated data
+    solved_reports = next((item['count'] for item in reports_data if item['is_solved']), 0)
+    unsolved_reports = next((item['count'] for item in reports_data if not item['is_solved']), 0)
 
     # Prepare data for JSON response
     json_data = {
         'data': {
-            'Shift': chart_data['shift_labels'],
-            'Cumulative Good Time': chart_data['cumulative_good_time'],
-            'Cumulative Bad Time': chart_data['cumulative_bad_time'],
-            'Cumulative Lost Time': chart_data['cumulative_lost_time'],
+            'Shift': chart_data.get('shift_labels', []),
+            'Cumulative Good Time': chart_data.get('cumulative_good_time', []),
+            'Cumulative Bad Time': chart_data.get('cumulative_bad_time', []),
+            'Cumulative Lost Time': chart_data.get('cumulative_lost_time', []),
             'Solved Reports': solved_reports,
             'Unsolved Reports': unsolved_reports,
         }
