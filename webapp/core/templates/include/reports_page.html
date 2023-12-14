@@ -110,7 +110,7 @@
                             <h5 class="mb-0 d-flex justify-content-between align-items-center">
                                 {{ report.bug_description }}
                                 <button class="btn btn-primary btn-sm edit-bug-btn"
-                                        data-bug-id="{{ report.id }}">Редактировать проблему
+                                        data-bug-id="{{ report.id }}">Решить проблему
                                 </button>
                             </h5>
                         </div>
@@ -148,19 +148,14 @@
                             <form method="post" class="bug-edit-form">
                                 {% csrf_token %}
                                 <div class="form-group">
-                                    <label for="report_description">Report Description</label>
-                                    <input type="text" class="form-control"
-                                           id="report_description" name="report_description"
-                                           value="{{ report.description }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="is_solved">Is Solved</label>
-                                    <input type="checkbox" class="form-check-input custom-checkbox"
-                                           id="is_solved" name="is_solved"
-                                           {% if report.is_solved %}checked{% endif %}>
+                                    <label for="report_description">Описание проблемы</label>
+                                    <input type="text" class="form-control" id="report_description"
+                                           name="report_description" disabled value="{{ report.description }}">
                                 </div>
                                 <input type="hidden" name="bug_id" value="{{ report.id }}">
-                                <button type="submit" class="btn btn-success">Save</button>
+                                <button type="button" class="btn btn-success update-button mt-3">Нажмите, если проблема
+                                    решена
+                                </button>
                             </form>
                         </div>
                     </div>
@@ -182,13 +177,25 @@
                 $('#edit-form-' + bugId).toggle();
             });
 
-            $('.bug-edit-form').submit(function (e) {
-                e.preventDefault();
-                var formData = $(this).serialize();
+            $('.update-button').click(function () {
+                var bugId = $(this).closest('form').find('[name="bug_id"]').val();
+                var reportDescription = $(this).closest('form').find('[name="report_description"]').val();
+
+                updateBugStatus(bugId, reportDescription);
+            });
+
+            function updateBugStatus(bugId, reportDescription) {
                 $.ajax({
                     type: 'POST',
                     url: '/reports/',
-                    data: formData,
+                    headers: {
+                        'X-CSRFToken': $('input[name="csrfmiddlewaretoken"]').val()
+                    },
+                    data: {
+                        bug_id: bugId,
+                        report_description: reportDescription,
+                        is_solved: true
+                    },
                     success: function (data) {
                         if (data.status === 'success') {
                             alert('Bug successfully updated!');
@@ -201,7 +208,7 @@
                         alert('An error occurred while updating the bug.');
                     }
                 });
-            });
+            }
 
             // Обработчик для кнопки "Show Solved"
             $('#showSolvedBtn').click(function () {
