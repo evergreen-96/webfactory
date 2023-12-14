@@ -35,12 +35,7 @@ def is_all_orders_ended(shift):
     Возвращает True, если все заказы завершены, иначе False.
     """
     orders = OrdersModel.objects.filter(related_to_shift=shift)
-    if not orders:
-        return True  # Все заказы завершены, если список пуст
-    for order in orders:
-        if not order.is_ended():
-            return False
-    return True
+    return not orders or all(order.is_ended() for order in orders)
 
 
 def start_new_order(custom_user, shift, selected_machine):
@@ -366,4 +361,3 @@ def count_and_end_shift(shift):
         return shift
 
     return shift
-
