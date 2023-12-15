@@ -36,17 +36,17 @@
             <div class="col-md-6">
                 <!-- Scan Form -->
                 <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
-                    {% csrf_token %}
-                    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
-                        автоматического распознавания артикула</label>
-                    <div class="input-group mb-3">
-                        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
-                               class="form-control">
-                        <button name="action" value="scan" class="btn btn-secondary w-100" type="submit">
-                            Сканировать
-                        </button>
-                    </div>
-                </form>
+    {% csrf_token %}
+    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для автоматического распознавания артикула</label>
+    <div class="input-group mb-3">
+        <!-- Скрытый input для выбора файла -->
+        <input type="file" name="image" id="imageFile" capture="user" accept="image/*" class="form-control" style="display: none;">
+        <!-- Кнопка "Сканировать" -->
+        <button name="action" value="scan" class="btn btn-secondary w-100" type="button" onclick="document.getElementById('imageFile').click();">
+            Сканировать
+        </button>
+    </div>
+</form>
                 <!-- Spinner -->
                 <div class="spinner-container">
                     <div class="spinner-border text-success" role="status">
@@ -73,38 +73,38 @@
             </div>
         </div>
         <!-- Static Progress Bar -->
-        <script>
-            document.getElementById('scanForm').addEventListener('submit', function (event) {
-                event.preventDefault();
-                var formData = new FormData(this);
-                var url = '/qr-decoder/';  // URL for form processing on the server
-                var progressBarFill = document.querySelector('.progress-bar-fill');
-                var spinnerContainer = document.querySelector('.spinner-container');
+<script>
+    document.getElementById('imageFile').addEventListener('change', async function () {
+        var formData = new FormData(document.getElementById('scanForm'));
+        var url = '/qr-decoder/';
+        var progressBarFill = document.querySelector('.progress-bar-fill');
+        var spinnerContainer = document.querySelector('.spinner-container');
 
-                // Show spinner
-                spinnerContainer.style.display = 'block';
+        spinnerContainer.style.display = 'block';
 
-                var xhr = new XMLHttpRequest();
-                xhr.open('POST', url, true);
-                xhr.onreadystatechange = function () {
-                    if (xhr.readyState === 4) {
-                        // Hide spinner
-                        spinnerContainer.style.display = 'none';
-
-                        if (xhr.status === 200) {
-                            var response = xhr.responseText;
-                            if (response === "Ошибка в декодировании") {
-                                alert("QR код не распознан, попробуйте еще раз");
-                            } else {
-                                document.getElementById('partname').value = response;
-                            }
-                        } else {
-                            alert("Ошибка, попробуйте еще раз");
-                        }
-                    }
-                };
-                xhr.send(formData);
+        try {
+            var response = await fetch(url, {
+                method: 'POST',
+                body: formData
             });
-        </script>
+
+            if (response.ok) {
+                var data = await response.text();
+                if (data === "Ошибка в декодировании") {
+                    alert("QR код не распознан, попробуйте еще раз");
+                } else {
+                    document.getElementById('partname').value = data;
+                }
+            } else {
+                alert("Ошибка, попробуйте еще раз");
+            }
+        } catch (error) {
+            console.error('Ошибка при выполнении запроса:', error);
+        } finally {
+            // Скрываем спиннер
+            spinnerContainer.style.display = 'none';
+        }
+    });
+</script>
     </div>
 {% endblock %}
