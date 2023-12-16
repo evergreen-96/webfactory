@@ -33,6 +33,12 @@ def get_last_or_create_shift(custom_user):
         return last_shift
 
 
+def save_url(request, order):
+    order.hold_url = request.META.get('PATH_INFO')
+    order.save()
+    return order
+
+
 def is_all_orders_ended(shift):
     try:
         """

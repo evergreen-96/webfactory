@@ -103,6 +103,7 @@ def shift_main_view(request):
             if 'continue' in request.POST:
                 order = get_order(custom_user, shift, selected_machine_id)
                 url = order.hold_url
+
                 if type(url) is NoneType:
                     try:
                         url = ReportsModel.objects.filter(order__machine_id=selected_machine_id).last().url
@@ -168,6 +169,7 @@ def order_scan_view(request):
             'order': order,
             'has_unsolved_reports': has_unsolved_reports
         }
+        save_url(request, order)
 
         if request.method == 'POST':
             if 'back' in request.POST:
@@ -207,6 +209,7 @@ def order_qauntity_view(request):
         has_unsolved_reports = ReportsModel.objects.filter(
             order__related_to_shift=shift, is_solved=False
         ).exists()
+
         context = {
             'user': request.user,
             'custom_user': custom_user,
@@ -214,6 +217,7 @@ def order_qauntity_view(request):
             'order': order,
             'has_unsolved_reports': has_unsolved_reports
         }
+        save_url(request, order)
 
         if request.method == 'POST':
             if 'pause_shift' in request.POST:
@@ -253,6 +257,7 @@ def order_setup_view(request):
         has_unsolved_reports = ReportsModel.objects.filter(
             order__related_to_shift=shift, is_solved=False
         ).exists()
+        save_url(request, order)
         context = {
             'user': request.user,
             'custom_user': custom_user,
@@ -297,6 +302,7 @@ def order_processing_view(request):
         has_unsolved_reports = ReportsModel.objects.filter(
             order__related_to_shift=shift, is_solved=False
         ).exists()
+        save_url(request, order)
         context = {
             'user': request.user,
             'custom_user': custom_user,
@@ -341,6 +347,7 @@ def order_ending_view(request):
         has_unsolved_reports = ReportsModel.objects.filter(
             order__related_to_shift=shift, is_solved=False
         ).exists()
+        save_url(request, order)
         context = {
             'user': request.user,
             'custom_user': custom_user,
