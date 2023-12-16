@@ -49,9 +49,6 @@ def backup(request):
             # Добавляем столбец 'model'
             fields_df.insert(0, 'model', model)
 
-            # Переименовываем столбцы, если нужно
-            # fields_df.rename(columns={'old_name': 'new_name'}, inplace=True)
-
             fields_df.to_excel(writer, index=False, sheet_name=model)
 
     return HttpResponse(excel_filepath)

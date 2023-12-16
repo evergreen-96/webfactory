@@ -18,38 +18,37 @@
             <div class="step-counter">
                 <img src="{% static 'images/qr_icon.png' %}" alt="Step 1">
             </div>
-            <div class="step-name">Название детали</div>
+
         </div>
         <div class="stepper-item">
             <div class="step-counter">
                 <img src="{% static 'images/quat_icon.png' %}" alt="Step 1">
             </div>
-            <div class="step-name">Количество</div>
+
         </div>
         <div class="stepper-item">
             <div class="step-counter">
                 <img src="{% static 'images/setup_icon.png' %}" alt="Step 1">
             </div>
-            <div class="step-name">Наладка</div>
+
         </div>
         <div class="stepper-item">
             <div class="step-counter">
                 <img src="{% static 'images/processing_icon.png' %}" alt="Step 1">
             </div>
-            <div class="step-name">Обработка</div>
+
         </div>
         <div class="stepper-item">
             <div class="step-counter">
                 <img src="{% static 'images/ending_icon.png' %}" alt="Step 1">
             </div>
-            <div class="step-name">Завершение</div>
+
         </div>
     </div>
     {#   прогресс бар #}
     
     <div class="row">
         <div class="col-md-8 mx-auto">
-            <h2 class="mb-4">Machine Selection</h2>
             {% for machine in machines %}
                 <div class="form-check mb-3">
                     <input class="form-check-input" type="radio" name="machine" value="{{ machine.id }}"
