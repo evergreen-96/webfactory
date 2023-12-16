@@ -21,13 +21,40 @@ logger = logging.getLogger('django')
 def backup(request):
     filename = timezone.now().date()
     backup_dir = "./backups"
+    # Создаем директорию, если ее нет
     if not os.path.exists(backup_dir):
         os.makedirs(backup_dir)
-    filepath = os.path.join(backup_dir, f"{filename}.json")
-    with open(filepath, 'w') as save_file:
-        call_command('dumpdata', 'core', stdout=save_file, indent=3)
+    json_filepath = os.path.join(backup_dir, f"{filename}.json")
+    excel_filepath = os.path.join(backup_dir, f"{filename}.xlsx")
 
-    return HttpResponse(filepath)
+    # Создаем JSON-бэкап
+    with open(json_filepath, 'w') as json_file:
+        call_command('dumpdata', 'core', stdout=json_file, indent=3)
+
+    # Преобразуем JSON в DataFrame с использованием pandas
+    df = pd.read_json(json_filepath)
+
+    # Создаем объект ExcelWriter для записи в файл Excel
+    with pd.ExcelWriter(excel_filepath, engine='xlsxwriter') as writer:
+        # Итерируем по уникальным моделям и сохраняем каждую в отдельном листе
+        for model in df['model'].unique():
+            model_df = df[df['model'] == model]
+
+            # Преобразуем столбец 'fields' в отдельные столбцы с использованием expand
+            fields_df = model_df['fields'].apply(pd.Series)
+
+            # Добавляем столбец 'pk'
+            fields_df.insert(0, 'pk', model_df['pk'])
+
+            # Добавляем столбец 'model'
+            fields_df.insert(0, 'model', model)
+
+            # Переименовываем столбцы, если нужно
+            # fields_df.rename(columns={'old_name': 'new_name'}, inplace=True)
+
+            fields_df.to_excel(writer, index=False, sheet_name=model)
+
+    return HttpResponse(excel_filepath)
 
 
 def login_view(request):
