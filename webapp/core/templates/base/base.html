@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
@@ -37,42 +38,162 @@
         {% block title %}
         {% endblock %}
     </title>
-<style>
-    body {
-        background-color: #ffffff;
-}
+    <style>
+        body {
+            background-color: #ffffff;
+        }
 
-.container {
-    background-color: #d7d7d7;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin-top: 20px;
-}
+        .container {
+            background-color: #d7d7d7;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
 
-.navbar {
-    background-color: #d7d7d7;
-    border-bottom: 1px solid #d7d7d7;
-}
+        .navbar {
+            background-color: #d7d7d7;
+            border-bottom: 1px solid #d7d7d7;
+        }
 
-.navbar-brand {
-    font-size: 24px;
-    font-weight: bold;
-}
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-.navbar-nav {
-    margin-left: auto;
-}
+        .navbar-nav {
+            margin-left: auto;
+        }
 
-.nav-link {
-    color: #495057;
-}
+        .nav-link {
+            color: #495057;
+        }
 
-#current-time {
-    font-size: 18px;
-    margin-top: 10px;
-}
-</style>
+        #current-time {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        {#   прогресс бар #}
+        .stepper-wrapper {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+
+            @media (max-width: 768px) {
+                font-size: 12px;
+            }
+        }
+
+        .stepper-item::before,
+        .stepper-item::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            z-index: 2;
+        }
+
+        .stepper-item::before {
+            left: -50%;
+        }
+
+        .stepper-item::after {
+            left: 50%;
+        }
+
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 6px;
+            overflow: hidden;
+        }
+
+        .stepper-item .step-counter img {
+            display: block;
+            margin: auto;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .stepper-item.active {
+            font-weight: bold;
+        }
+
+        .stepper-item.completed .step-counter {
+            background-color: #4bb543;
+        }
+
+        .stepper-item.completed::after {
+            content: "";
+            position: absolute;
+            border-bottom: 2px solid #4bb543;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 3;
+        }
+
+        .stepper-item:first-child::before,
+        .stepper-item:last-child::after {
+            content: none;
+        }
+        {#   /прогресс бар #}
+
+        
+        {#    spinner    #}
+        .spinner-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        {#    /spinner    #}
+
+        {#  report page  #}
+        .custom-checkbox {
+            width: 1.5em;
+            height: 1.5em;
+        }
+
+        .solved-reports {
+            display: none;
+        }
+
+        #showSolvedBtn {
+            width: 100%;
+        }
+
+        #btnContainer {
+            display: flex;
+        }
+
+        #returnToMainBtn {
+            flex: 2;
+            margin-right: 5px;
+        }
+
+        #showSolvedBtn {
+            flex: 1;
+        }
+        {#  /report page  #}
+    </style>
 </head>
 <body>
 <div class="container mt-4">

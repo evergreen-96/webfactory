@@ -1,52 +1,67 @@
 {% extends "base/base.html" %}
-
+{% load static %}
 {% block content %}
-    <style>
-        /* Стили для прогресс-бара */
-        .progress-bar-container {
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            height: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 8px;
-            background-color: #28a745;
-            transition: width 0.3s ease-in-out;
-        }
-
-        /* Стили для спиннера */
-        .spinner-container {
-            display: none;
-            margin-top: 10px;
-        }
-    </style>
-    <div class="progress-bar-container">
-        <div class="progress-bar">
-            <div class="progress-bar-fill" style="width: 16.6%;"></div>
+{#   прогресс бар #}
+    <div class="stepper-wrapper">
+    
+        <div class="stepper-item completed">
+            <div class="step-counter">
+                <img src="{% static 'images/selection_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Выбор станка</div>
+        </div>
+        <div class="stepper-item active">
+            <div class="step-counter">
+                <img src="{% static 'images/qr_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Название детали</div>
+        </div>
+        <div class="stepper-item">
+            <div class="step-counter">
+                <img src="{% static 'images/quat_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Количество</div>
+        </div>
+        <div class="stepper-item">
+            <div class="step-counter">
+                <img src="{% static 'images/setup_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Наладка</div>
+        </div>
+        <div class="stepper-item">
+            <div class="step-counter">
+                <img src="{% static 'images/processing_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Обработка</div>
+        </div>
+        <div class="stepper-item">
+            <div class="step-counter">
+                <img src="{% static 'images/ending_icon.png' %}" alt="Step 1">
+            </div>
+            <div class="step-name">Завершение</div>
         </div>
     </div>
+    {#   прогресс бар #}
+
     <div class="container">
         <div class="row">
             <div class="col-md-6">
                 <!-- Scan Form -->
                 <form id="scanForm" method="post" action="{% url 'shift_scan_page' %}" class="mb-4">
-    {% csrf_token %}
-    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для автоматического распознавания артикула</label>
-    <div class="input-group mb-3">
-        <!-- Скрытый input для выбора файла -->
-        <input type="file" name="image" id="imageFile" capture="user" accept="image/*" class="form-control" style="display: none;">
-        <!-- Кнопка "Сканировать" -->
-        <button name="action" value="scan" class="btn btn-secondary w-100" type="button" onclick="document.getElementById('imageFile').click();">
-            Сканировать
-        </button>
-    </div>
-</form>
+                    {% csrf_token %}
+                    <label for="imageFile" class="form-label">Сделайте фото QR-кода и нажмите "Сканировать" для
+                        автоматического распознавания артикула</label>
+                    <div class="input-group mb-3">
+                        <!-- Скрытый input для выбора файла -->
+                        <input type="file" name="image" id="imageFile" capture="user" accept="image/*"
+                               class="form-control" style="display: none;">
+                        <!-- Кнопка "Сканировать" -->
+                        <button name="action" value="scan" class="btn btn-secondary w-100" type="button"
+                                onclick="document.getElementById('imageFile').click();">
+                            Сканировать
+                        </button>
+                    </div>
+                </form>
                 <!-- Spinner -->
                 <div class="spinner-container">
                     <div class="spinner-border text-success" role="status">
@@ -73,38 +88,38 @@
             </div>
         </div>
         <!-- Static Progress Bar -->
-<script>
-    document.getElementById('imageFile').addEventListener('change', async function () {
-        var formData = new FormData(document.getElementById('scanForm'));
-        var url = '/qr-decoder/';
-        var progressBarFill = document.querySelector('.progress-bar-fill');
-        var spinnerContainer = document.querySelector('.spinner-container');
+        <script>
+            document.getElementById('imageFile').addEventListener('change', async function () {
+                var formData = new FormData(document.getElementById('scanForm'));
+                var url = '/qr-decoder/';
+                var progressBarFill = document.querySelector('.progress-bar-fill');
+                var spinnerContainer = document.querySelector('.spinner-container');
 
-        spinnerContainer.style.display = 'block';
+                spinnerContainer.style.display = 'block';
 
-        try {
-            var response = await fetch(url, {
-                method: 'POST',
-                body: formData
-            });
+                try {
+                    var response = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
 
-            if (response.ok) {
-                var data = await response.text();
-                if (data === "Ошибка в декодировании") {
-                    alert("QR код не распознан, попробуйте еще раз");
-                } else {
-                    document.getElementById('partname').value = data;
+                    if (response.ok) {
+                        var data = await response.text();
+                        if (data === "Ошибка в декодировании") {
+                            alert("QR код не распознан, попробуйте еще раз");
+                        } else {
+                            document.getElementById('partname').value = data;
+                        }
+                    } else {
+                        alert("Ошибка, попробуйте еще раз");
+                    }
+                } catch (error) {
+                    console.error('Ошибка при выполнении запроса:', error);
+                } finally {
+                    // Скрываем спиннер
+                    spinnerContainer.style.display = 'none';
                 }
-            } else {
-                alert("Ошибка, попробуйте еще раз");
-            }
-        } catch (error) {
-            console.error('Ошибка при выполнении запроса:', error);
-        } finally {
-            // Скрываем спиннер
-            spinnerContainer.style.display = 'none';
-        }
-    });
-</script>
+            });
+        </script>
     </div>
 {% endblock %}
