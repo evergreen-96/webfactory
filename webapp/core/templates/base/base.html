@@ -155,9 +155,20 @@
         .stepper-item:last-child::after {
             content: none;
         }
+
+        .stepper-item.active .step-counter {
+            width: 60px; /* Увеличьте размер для активного элемента */
+            height: 60px; /* Увеличьте размер для активного элемента */
+        }
+
+        .stepper-item.active .step-counter img {
+            max-width: 100%; /* Настройте максимальную ширину изображения */
+            max-height: 100%; /* Настройте максимальную высоту изображения */
+        }
+
         {#   /прогресс бар #}
 
-        
+
         {#    spinner    #}
         .spinner-container {
             display: none;
@@ -192,6 +203,7 @@
         #showSolvedBtn {
             flex: 1;
         }
+
         {#  /report page  #}
     </style>
 </head>
