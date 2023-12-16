@@ -1,8 +1,10 @@
+import os
+import subprocess
 import traceback
-
+import pandas as pd
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.expressions import NoneType
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -12,6 +14,20 @@ from core.forms import ReportEditForm
 from core.models import CustomUserModel
 
 logger = logging.getLogger('django')
+
+
+@login_required(login_url='login')
+@user_passes_test(lambda u: u.is_superuser)
+def backup(request):
+    filename = timezone.now().date()
+    backup_dir = "./backups"
+    if not os.path.exists(backup_dir):
+        os.makedirs(backup_dir)
+    filepath = os.path.join(backup_dir, f"{filename}.json")
+    with open(filepath, 'w') as save_file:
+        call_command('dumpdata', 'core', stdout=save_file, indent=3)
+
+    return HttpResponse(filepath)
 
 
 def login_view(request):

@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 from PIL import Image
+from django.core.management import call_command
 from django.db.models import Sum, ExpressionWrapper, F, fields
 from django.http import HttpResponse
 from django.utils import timezone
@@ -693,3 +694,4 @@ def count_and_end_shift(shift):
 
     logger.info(f"{datetime.datetime.now()} |BACKEND| Shift {shift.id} calculated with no errors.")
     return shift
+

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'core',
     'debug_toolbar',
+
 ]
 
 MIDDLEWARE = [
@@ -181,3 +182,4 @@ LOGGING = {
         },
     },
 }
+
