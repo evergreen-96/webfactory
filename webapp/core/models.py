@@ -118,7 +118,7 @@ class OrdersModel(models.Model):
     machine = models.ForeignKey(MachineModel, on_delete=models.CASCADE, blank=True, null=True, verbose_name='Станок')
     related_to_shift = models.ForeignKey(ShiftModel, related_name='stat_orders',
                                          on_delete=models.CASCADE, verbose_name='Смена')
-    part_name = models.CharField(max_length=256, verbose_name='Название детали')
+    part_name = models.TextField(max_length=1000,verbose_name='Название детали')
     num_parts = models.PositiveIntegerField(default=0, verbose_name='Количество деталей')
     start_time = models.DateTimeField(blank=True, null=True, verbose_name='Начало работы')
     scan_time = models.DateTimeField(blank=True, null=True, verbose_name='Время сканирования')

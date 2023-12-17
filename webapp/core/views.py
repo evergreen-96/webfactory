@@ -1,5 +1,4 @@
 import os
-import subprocess
 import traceback
 import pandas as pd
 from django.contrib import messages
@@ -122,6 +121,8 @@ def shift_main_view(request):
     """
     Главная страница смены
     """
+
+    add.delay(4, 4)
     try:
         custom_user = CustomUserModel.objects.get(id=request.user.id)
         machines = custom_user.machine.all()
