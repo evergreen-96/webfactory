@@ -266,6 +266,12 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 <script>
+     window.history.pushState(null, document.title, window.location.href);
+        // Перехватываем событие нажатия клавиши "Назад"
+        window.addEventListener('popstate', function (event) {
+            // Возвращаем текущее состояние истории, чтобы отменить попытку перехода назад
+            window.history.pushState(null, document.title, window.location.href);
+        });
     function updateCurrentTime() {
         const currentTimeElement = document.getElementById('current-time');
         const now = new Date();

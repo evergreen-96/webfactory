@@ -6,7 +6,6 @@ class MachineTypesModelAdmin(admin.ModelAdmin):
     list_display = ['machine_type']
     search_fields = ['machine_type']
 
-
 class MachineModelAdmin(admin.ModelAdmin):
     list_display = [field.name for field in MachineModel._meta.fields]
     list_filter = [field.name for field in MachineModel._meta.fields ]

@@ -1,9 +1,9 @@
 {% extends "base/base.html" %}
 {% load static %}
 {% block content %}
-{#   прогресс бар #}
+    {#   прогресс бар #}
     <div class="stepper-wrapper">
-    
+
         <div class="stepper-item completed">
             <div class="step-counter">
                 <img src="{% static 'images/selection_icon.png' %}" alt="Step 1">
@@ -71,14 +71,13 @@
                 </div>
             </div>
 
-            <!-- Manual Entry Form -->
             <div class="col-md-6">
                 <form id="uploadForm" method="post">
                     {% csrf_token %}
                     <p class="lead mb-3">Или введите название вручную</p>
                     <div class="input-group mb-3">
                         <input type="text" name="partname" id="partname" value="" class="form-control">
-                        <button type="submit" class="btn btn-success w-100 mt-2">Продолжить</button>
+                        <button type="submit" id="sendBtn" class="btn btn-success w-100 mt-2">Продолжить</button>
                     </div>
                 </form>
                 <form id='backBtn' method="post">
@@ -118,6 +117,18 @@
                 } finally {
                     // Скрываем спиннер
                     spinnerContainer.style.display = 'none';
+                }
+            });
+            document.getElementById('sendBtn').addEventListener('click', function (event) {
+                var partname = document.getElementById('partname').value.trim();
+
+                // Добавляем проверку на максимальную длину (255 символов)
+                if (partname === '') {
+                    alert('Поле не может быть пустым!');
+                    event.preventDefault();
+                } else if (partname.length > 1000) {
+                    alert('Значение не может превышать 1000 символов!');
+                    event.preventDefault();
                 }
             });
         </script>
