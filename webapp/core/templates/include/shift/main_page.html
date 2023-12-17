@@ -97,32 +97,47 @@
             {% include "forms/justreport_form.html" %}
         </div>
     </div>
-    
+
     <script>
-       
-        document.addEventListener("DOMContentLoaded", function () {
-            var continueButton = document.getElementById("continueButton");
-            var startNewButton = document.getElementById("startNewButton");
-            var stopWorkingButton = document.getElementById("stopWorkingButton");
-            var selectedMachineIdInput = document.getElementById("selectedMachineId");
-            var radios = document.querySelectorAll('input[type=radio][name=machine]');
 
-            radios.forEach(function (radio) {
-                radio.addEventListener('change', function () {
-                    continueButton.disabled = !(this.checked && this.getAttribute('data-in-progress') === 'true');
-                    startNewButton.disabled = this.checked && (this.getAttribute('data-in-progress') === 'true' || this.getAttribute('data-broken') === 'true');
-                    stopWorkingButton.disabled = !(this.checked && this.getAttribute('data-in-progress') === 'true');
+            document.addEventListener("DOMContentLoaded", function () {
+        var continueButton = document.getElementById("continueButton");
+        var startNewButton = document.getElementById("startNewButton");
+        var stopWorkingButton = document.getElementById("stopWorkingButton");
+        var selectedMachineIdInput = document.getElementById("selectedMachineId");
+        var radios = document.querySelectorAll('input[type=radio][name=machine]');
 
-                    // Additional check to enable the "start new" button
-                    if (this.checked && this.getAttribute('data-in-progress') !== 'true' && this.getAttribute('data-broken') !== 'true') {
-                        startNewButton.disabled = false;
-                    }
+        function updateButtonStyling() {
+            continueButton.classList.toggle('btn-outline-primary', continueButton.disabled);
+            continueButton.classList.toggle('btn-primary', !continueButton.disabled);
+            startNewButton.classList.toggle('btn-outline-success', startNewButton.disabled);
+            startNewButton.classList.toggle('btn-success', !startNewButton.disabled);
+            stopWorkingButton.classList.toggle('btn-outline-danger', stopWorkingButton.disabled);
+            stopWorkingButton.classList.toggle('btn-danger', !stopWorkingButton.disabled);
+        }
 
-                    // Update the hidden field value with the selected machine ID
-                    selectedMachineIdInput.value = this.value;
-                });
+        radios.forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                continueButton.disabled = !(this.checked && this.getAttribute('data-in-progress') === 'true');
+                startNewButton.disabled = this.checked && (this.getAttribute('data-in-progress') === 'true' || this.getAttribute('data-broken') === 'true');
+                stopWorkingButton.disabled = !(this.checked && this.getAttribute('data-in-progress') === 'true');
+
+                // Additional check to enable the "start new" button
+                if (this.checked && this.getAttribute('data-in-progress') !== 'true' && this.getAttribute('data-broken') !== 'true') {
+                    startNewButton.disabled = false;
+                }
+
+                // Update the hidden field value with the selected machine ID
+                selectedMachineIdInput.value = this.value;
+
+                // Add or remove Bootstrap classes for button styling
+                updateButtonStyling();
             });
         });
+
+        // Initial setup to ensure buttons have no Bootstrap styling on page load
+        updateButtonStyling();
+    });
 
     </script>
 
