@@ -98,6 +98,7 @@ def pre_shift_view(request):
     try:
         custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
         last_shift = ShiftModel.objects.filter(user=custom_user).last()
+        is_last_shift_ended = True
         if last_shift:
             is_last_shift_ended = last_shift.is_ended()
         context = {
