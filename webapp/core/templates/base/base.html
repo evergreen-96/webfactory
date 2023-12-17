@@ -266,12 +266,17 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 <script>
-     window.history.pushState(null, document.title, window.location.href);
-        // Перехватываем событие нажатия клавиши "Назад"
+    if (history.pushState) {
+        //Chrome and modern browsers
+        history.pushState(null, document.title, location.href);
         window.addEventListener('popstate', function (event) {
-            // Возвращаем текущее состояние истории, чтобы отменить попытку перехода назад
-            window.history.pushState(null, document.title, window.location.href);
+            history.pushState(null, document.title, location.href);
         });
+    } else {
+        //IE
+        history.forward();
+    }
+
     function updateCurrentTime() {
         const currentTimeElement = document.getElementById('current-time');
         const now = new Date();

@@ -97,13 +97,17 @@ def pre_shift_view(request):
     """
     try:
         custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
+        last_shift = ShiftModel.objects.filter(user=custom_user).last()
+        if last_shift:
+            is_last_shift_ended = last_shift.is_ended()
         context = {
+            'is_last_shift_ended': is_last_shift_ended,
             'user': request.user,
             'custom_user': custom_user,
         }
-
         if request.method == 'POST':
             if 'start_shift' in request.POST:
+                get_last_or_create_shift(custom_user)
                 logger.info(f"{datetime.datetime.now()} |INFO| User {custom_user} "
                             f"started-continued a shift")
                 return redirect('shift_main_page')
@@ -121,7 +125,6 @@ def shift_main_view(request):
     """
     Главная страница смены
     """
-
     try:
         custom_user = CustomUserModel.objects.get(id=request.user.id)
         machines = custom_user.machine.all()
