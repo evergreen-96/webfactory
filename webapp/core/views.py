@@ -11,6 +11,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.buisness import *
 from core.forms import ReportEditForm
 from core.models import CustomUserModel
+from core.tasks import add, my_async_task
+from webapp.celery import debug_task
 
 logger = logging.getLogger('django')
 
@@ -95,6 +97,7 @@ def pre_shift_view(request):
     """
     Начать смену или выйти из системы
     """
+    add.delay(2,3)
     try:
         custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
         last_shift = ShiftModel.objects.filter(user=custom_user).last()
@@ -126,6 +129,7 @@ def shift_main_view(request):
     """
     Главная страница смены
     """
+    add
     try:
         custom_user = CustomUserModel.objects.get(id=request.user.id)
         machines = custom_user.machine.all()
