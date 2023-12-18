@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 from PIL import Image
+from celery import shared_task, chain
 from django.core.management import call_command
 from django.db.models import Sum, ExpressionWrapper, F, fields
 from django.http import HttpResponse
@@ -12,6 +13,8 @@ from pyzbar.pyzbar import decode
 from core.models import ReportsModel, OrdersModel, ShiftModel, MachineModel, UserRequestsModel, PositionsModel
 
 logger = logging.getLogger('django')
+
+
 def get_last_or_create_shift(custom_user):
     """
     Retrieves the last shift associated with the given custom user.
@@ -33,7 +36,7 @@ def get_last_or_create_shift(custom_user):
     else:
         return last_shift
 
-
+@shared_task
 def save_url(request, order):
     order.hold_url = request.META.get('PATH_INFO')
     order.save()
@@ -51,7 +54,7 @@ def is_all_orders_ended(shift):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in is_all_orders_ended: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in is_all_orders_ended: {e}",
                      exc_info=True)
 
         # Вернуть False в случае ошибки
@@ -79,7 +82,7 @@ def start_new_order(custom_user, shift, selected_machine):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in start_new_order: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in start_new_order: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -101,7 +104,7 @@ def get_order(custom_user, shift, selected_machine):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in get_order: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in get_order: {e}", exc_info=True)
 
         return None
 
@@ -123,7 +126,7 @@ def stop_order(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in stop_order: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in stop_order: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -142,7 +145,7 @@ def add_part_name(order, part_name):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_part_name: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_part_name: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -160,7 +163,7 @@ def add_quantity(order, quantity):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_quantity: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_quantity: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -178,7 +181,7 @@ def add_start_working_time(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_start_working_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_start_working_time: {e}",
                      exc_info=True)
 
         # Вернуть None в случае ошибки
@@ -197,7 +200,7 @@ def add_machine_start_time(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_machine_start_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_machine_start_time: {e}",
                      exc_info=True)
 
         # Вернуть None в случае ошибки
@@ -216,7 +219,7 @@ def add_machine_end_time(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_machine_end_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_machine_end_time: {e}",
                      exc_info=True)
 
         # Вернуть None в случае ошибки
@@ -235,7 +238,7 @@ def add_end_working_time(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_end_working_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_end_working_time: {e}",
                      exc_info=True)
 
         # Вернуть None в случае ошибки
@@ -265,7 +268,7 @@ def machine_free(order, status='in_progress'):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in machine_free: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in machine_free: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -284,7 +287,7 @@ def set_on_hold(request, order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in set_on_hold: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in set_on_hold: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -302,7 +305,7 @@ def remove_hold(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in remove_hold: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in remove_hold: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -333,10 +336,11 @@ def add_report(request, order, custom_user):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_report: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_report: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
+
 
 def get_all_reports(user):
     try:
@@ -349,7 +353,7 @@ def get_all_reports(user):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in get_all_reports: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in get_all_reports: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -369,7 +373,7 @@ def add_request(request, custom_user):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in add_request: {e}", exc_info=True)
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in add_request: {e}", exc_info=True)
 
         # Вернуть None в случае ошибки
         return None
@@ -395,15 +399,12 @@ def count_and_set_reports_duration(order):
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in count_and_set_reports_duration: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in count_and_set_reports_duration: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-#
-#
 def decode_photo(request):
     """
     API endpoint to /qr-decoder/
@@ -425,87 +426,90 @@ def decode_photo(request):
     return HttpResponse(decoded_qr_data)
 
 
-def calculate_shift_end_time(shift):
+@shared_task
+def calculate_shift_end_time(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         shift.end_time = timezone.now()
         shift.save()
-
         # Логирование события расчета времени окончания смены
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated shift end time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_shift_end_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_shift_end_time: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def count_num_ended_orders(shift):
+@shared_task
+def count_num_ended_orders(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         shift.num_ended_orders = OrdersModel.objects.filter(
             related_to_shift=shift, ended_early=False).count()
         shift.save()
-
         # Логирование события подсчета количества завершенных заказов в смене
         logger.info(f"{datetime.datetime.now()} |BACKEND| Counted number of ended orders for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in count_num_ended_orders: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in count_num_ended_orders: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def calculate_shift_time_total(shift):
+@shared_task
+def calculate_shift_time_total(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         shift.time_total = shift.end_time - shift.start_time
         shift.save()
-
         # Логирование события расчета общего времени смены
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total shift time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_shift_time_total: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_shift_time_total: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def calculate_total_bugs_time(shift):
+@shared_task
+def calculate_total_bugs_time(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         total_bugs_time = OrdersModel.objects.filter(related_to_shift=shift).aggregate(
             total_bugs_time=Sum('bugs_time')
         )['total_bugs_time']
+
         shift.total_bugs_time = total_bugs_time or timedelta()
         shift.save()
-
         # Логирование события расчета общего времени багов в смене
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total bugs time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_total_bugs_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_total_bugs_time: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def calculate_good_time(shift):
+@shared_task
+def calculate_good_time(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         duration_expression = ExpressionWrapper(
             F('machine_end_time') - F('machine_start_time'),
@@ -525,18 +529,19 @@ def calculate_good_time(shift):
         # Логирование события расчета общего полезного времени
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total good time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_good_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_good_time: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def calculate_bad_time(shift):
+@shared_task
+def calculate_bad_time(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         total_bad_time = timedelta()
 
@@ -561,21 +566,21 @@ def calculate_bad_time(shift):
             shift.bad_time = total_bad_time
 
         shift.save()
-
         # Логирование события расчета общего бесполезного времени
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total bad time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_bad_time: {e}", exc_info=True)
-
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_bad_time: {e}", exc_info=True)
         # Вернуть None в случае ошибки
         return None
 
 
-def calculate_lost_time(shift):
+@shared_task
+def calculate_lost_time(shift_id):
+    shift = ShiftModel.objects.get(id=shift_id)
     try:
         chill_time = PositionsModel.objects.get(
             position_name=shift.user.position).chill_time
@@ -586,112 +591,33 @@ def calculate_lost_time(shift):
         )
         shift.lost_time = total_lost_time
         shift.save()
-
         # Логирование события расчета общего потерянного времени
         logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total lost time for Shift {shift.id}")
 
-        return shift
+        return shift_id
 
     except Exception as e:
         # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_lost_time: {e}",
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in calculate_lost_time: {e}",
                      exc_info=True)
-
         # Вернуть None в случае ошибки
         return None
 
 
-def count_and_end_shift(shift):
+@shared_task
+def count_and_end_shift(shift_id):
     try:
-        shift = calculate_shift_end_time(shift)
-        shift.save()
-
-        # Логирование события завершения смены
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated shift end time for Shift {shift.id}")
-
+        task_chain = (
+                calculate_shift_end_time.s(shift_id) |
+                count_num_ended_orders.s() |
+                calculate_shift_time_total.s() |
+                calculate_total_bugs_time.s() |
+                calculate_good_time.s() |
+                calculate_bad_time.s() |
+                calculate_lost_time.s()
+        )
+        # Запуск цепочки задач
+        task_chain.apply_async()
+        return shift_id
     except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_shift_end_time: {e}",
-                     exc_info=True)
-        return shift
-
-    try:
-        shift = count_num_ended_orders(shift)
-        shift.save()
-
-        # Логирование события подсчета количества завершенных заказов
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Counted number of ended orders for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in count_num_ended_orders: {e}",
-                     exc_info=True)
-        return shift
-
-    try:
-        shift = calculate_shift_time_total(shift)
-        shift.save()
-
-        # Логирование события расчета общего времени смены
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total time for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_shift_time_total: {e}",
-                     exc_info=True)
-        return shift
-
-    try:
-        shift = calculate_total_bugs_time(shift)
-        shift.save()
-
-        # Логирование события расчета общего времени на баги
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total time for bugs for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_total_bugs_time: {e}",
-                     exc_info=True)
-        return shift
-
-    try:
-        shift = calculate_good_time(shift)
-        shift.save()
-
-        # Логирование события расчета общего полезного времени
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total good time for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_good_time: {e}",
-                     exc_info=True)
-        return shift
-
-    try:
-        shift = calculate_bad_time(shift)
-        shift.save()
-
-        # Логирование события расчета общего бесполезного времени
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total bad time for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_bad_time: {e}", exc_info=True)
-        return shift
-
-    try:
-        shift = calculate_lost_time(shift)
-        shift.save()
-
-        # Логирование события расчета общего потерянного времени
-        logger.info(f"{datetime.datetime.now()} |BACKEND| Calculated total lost time for Shift {shift.id}.")
-
-    except Exception as e:
-        # Логирование исключения, если оно произошло
-        logger.error(f"{datetime.datetime.now()} |BACKEND| An error occurred in calculate_lost_time: {e}",
-                     exc_info=True)
-        return shift
-
-    logger.info(f"{datetime.datetime.now()} |BACKEND| Shift {shift.id} calculated with no errors.")
-    return shift
-
+        logger.error(f"{datetime.datetime.now()} |ERROR| An error occurred in count_and_end_shift: {e}")

@@ -11,8 +11,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.buisness import *
 from core.forms import ReportEditForm
 from core.models import CustomUserModel
-from core.tasks import add, my_async_task
-from webapp.celery import debug_task
+
+
 
 logger = logging.getLogger('django')
 
@@ -97,7 +97,7 @@ def pre_shift_view(request):
     """
     Начать смену или выйти из системы
     """
-    add.delay(2,3)
+
     try:
         custom_user = CustomUserModel.objects.filter(user=request.user.id).last()
         last_shift = ShiftModel.objects.filter(user=custom_user).last()
@@ -129,11 +129,11 @@ def shift_main_view(request):
     """
     Главная страница смены
     """
-    add
     try:
         custom_user = CustomUserModel.objects.get(id=request.user.id)
         machines = custom_user.machine.all()
         shift = get_last_or_create_shift(custom_user)
+        shift_id = shift.id
         has_unsolved_reports = ReportsModel.objects.filter(
             order__related_to_shift=shift, is_solved=False
         ).exists()
@@ -186,7 +186,7 @@ def shift_main_view(request):
                 if not is_all_orders_ended(shift):
                     messages.error(request, 'Необходимо завершить все заказы!')
                     return redirect('shift_main_page')
-                count_and_end_shift(shift)
+                count_and_end_shift.delay(shift_id)
                 logger.info(f"{datetime.datetime.now()} |INFO| User {custom_user} ended the shift {shift.id}.")
 
                 return redirect('main')
@@ -412,7 +412,6 @@ def order_ending_view(request):
                 logger.info(f"{datetime.datetime.now()} |INFO| User {custom_user} paused Order {order.id}")
 
                 return redirect('shift_main_page')
-
             add_end_working_time(order)
             machine_free(order)
             count_and_set_reports_duration(order)
