@@ -1,15 +1,23 @@
-from django.contrib.auth.views import LogoutView
 from django.urls import path
 
-from core.views import produced_view, produced_new_view, register_view, \
-    custom_login_view, logout_redirect, reset_password_view
+from core.views import decode_photo, pre_shift_view, login_view, logout_view, shift_main_view, order_scan_view, \
+    order_qauntity_view, order_setup_view, order_processing_view, order_ending_view, report_send, reports_view, \
+    request_send, backup
 
 urlpatterns = [
-    path('', produced_view, name='main'),
-    path('new/', produced_new_view, name='newrecord'),
-    path('register/', register_view, name='register'),
-    path('login/', custom_login_view, name='login'),
-    path('logout-redirect/', logout_redirect, name='logout_redirect'),
-    path('logout/', LogoutView.as_view(next_page='logout_redirect'), name='logout'),
-    path('reset-password/', reset_password_view, name='reset_pass'),
+    path('', pre_shift_view, name='main'),
+    path('shift/', shift_main_view, name='shift_main_page'),
+    path('report/', report_send, name='report_page'),
+    path('reports/', reports_view, name='reports_view'),
+    path('request/', request_send, name='request_send'),
+    path('qr-decoder/', decode_photo, name='decode_photo'),
+    path('shift/scan/', order_scan_view, name='shift_scan_page'),
+    path('shift/quantity/', order_qauntity_view, name='shift_qauntity_page'),
+    path('shift/setup/', order_setup_view, name='shift_setup_page'),
+    path('shift/processing/', order_processing_view, name='shift_processing_page'),
+    path('shift/ending/', order_ending_view, name='shift_ending_page'),
+    path('login/', login_view, name='login'),
+    path('logout/', logout_view, name='logout'),
+    path('backup/', backup, name='backup')
+
 ]
